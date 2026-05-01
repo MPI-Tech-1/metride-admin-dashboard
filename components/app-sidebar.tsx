@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Users, CarFront, CalendarCheck } from "lucide-react"
+import { useSession } from "next-auth/react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -17,35 +18,29 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+const navMain = [
+  {
+    title: "Customers",
+    url: "#",
+    icon: Users,
+    isActive: true,
   },
-  navMain: [
-    {
-      title: "Customers",
-      url: "#",
-      icon: Users,
-      isActive: true,
-    },
-    {
-      title: "Drivers",
-      url: "#",
-      icon: CarFront,
-    },
-    {
-      title: "Bookings",
-      url: "#",
-      icon: CalendarCheck,
-      items: [],
-    },
-  ],
-}
+  {
+    title: "Drivers",
+    url: "#",
+    icon: CarFront,
+  },
+  {
+    title: "Bookings",
+    url: "#",
+    icon: CalendarCheck,
+    items: [],
+  },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession()
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -60,10 +55,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser
+          user={{
+            name: session?.user?.name ?? "",
+            email: session?.user?.email ?? "",
+          }}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
