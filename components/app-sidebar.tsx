@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Users, CarFront, CalendarCheck } from "lucide-react"
+import { Users, CarFront, CalendarCheck, LayoutDashboard } from "lucide-react"
 import { useSession } from "next-auth/react"
 
 import { NavMain } from "@/components/nav-main"
@@ -19,6 +19,11 @@ import {
 import Link from "next/link"
 
 const navMain = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     title: "Customers",
     url: "/customers",
