@@ -27,7 +27,7 @@ const navMain = [
   },
   {
     title: "Drivers",
-    url: "#",
+    url: "/driver",
     icon: CarFront,
   },
   {

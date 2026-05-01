@@ -1,6 +1,7 @@
 import { authOptions } from "@/lib/auth"
 import axios, { AxiosRequestConfig } from "axios"
 import { getServerSession } from "next-auth/next"
+import { redirect } from "next/navigation"
 
 const httpClientInstance = axios.create({
   baseURL: process.env.API_BASE_URL,
@@ -34,5 +35,15 @@ httpClientInstance.interceptors.request.use(async (config) => {
   } catch {}
   return config
 })
+
+httpClientInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      redirect("/login")
+    }
+    return Promise.reject(error)
+  }
+)
 
 export default httpClientInstance

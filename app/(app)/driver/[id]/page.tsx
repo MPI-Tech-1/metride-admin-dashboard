@@ -2,10 +2,7 @@ import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import getDriver from "@/actions/drivers/getDriver"
 import { Badge } from "@/components/ui/badge"
-// import { Card, CardContent } from "@/components/ui/card"
 import {
-  IconCircleCheckFilled,
-  IconLoader,
   IconCircleX,
   IconUser,
   IconCalendar,
@@ -20,6 +17,7 @@ import {
 import { format } from "date-fns"
 import DriverLayout from "@/components/layouts/driver-layout"
 import { Pencil } from "lucide-react"
+import DriverActions from "@/components/app/driver/driver-actions"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -29,6 +27,8 @@ export default async function Page({ params }: PageProps) {
   const { id } = await params
   const driver = await getDriver(id)
 
+  // const [showRejectDriverModal, setShowRejectDriverModal] =
+  //   useState<boolean>(false)
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: "Drivers",
@@ -39,12 +39,6 @@ export default async function Page({ params }: PageProps) {
       href: "#",
     },
   ]
-
-  const statusIcons = {
-    approved: <IconCircleCheckFilled className="text-green-500" size={18} />,
-    pending: <IconLoader className="animate-spin text-yellow-500" size={18} />,
-    rejected: <IconCircleX className="text-red-500" size={18} />,
-  }
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -59,6 +53,12 @@ export default async function Page({ params }: PageProps) {
             status: driver.status,
             driverDocument: driver.driverDocument,
           }}
+          header={
+            <DriverActions
+              driverId={driver.identifier}
+              initialStatus={driver.status}
+            />
+          }
         >
           <div className="grid grid-cols-1 gap-6 pb-3">
             {/* Personal Information (3/4) */}
@@ -272,21 +272,23 @@ export default async function Page({ params }: PageProps) {
               <div className="mt-4 space-y-3 sm:space-y-4">
                 <InfoItem
                   label="Bank Name"
-                  value={driver.driverBankAccount.bank || "Not Provided"}
+                  value={driver.driverBankAccount?.bank?.name || "Not Provided"}
                   icon={<IconBuildingBank size={16} />}
                 />
 
                 <InfoItem
                   label="Account Number"
                   value={
-                    driver.driverBankAccount.accountNumber || "Not Provided"
+                    driver.driverBankAccount?.accountNumber || "Not Provided"
                   }
                   icon={<IconCreditCard size={16} />}
                 />
 
                 <InfoItem
                   label="Account Name"
-                  value={driver.driverBankAccount.accountName || "Not Provided"}
+                  value={
+                    driver.driverBankAccount?.accountName || "Not Provided"
+                  }
                   icon={<IconUser size={16} />}
                 />
               </div>

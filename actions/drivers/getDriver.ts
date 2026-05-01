@@ -33,7 +33,10 @@ export interface DriverDetailDTO {
   }
   driverBankAccount: {
     identifier: string
-    bank: string | null
+    bank: {
+      identifier: string
+      name: string
+    } | null
     accountName: string | null
     accountNumber: string | null
     createdAt: string

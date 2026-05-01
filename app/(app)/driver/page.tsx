@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import { SectionCards } from "@/components/app/driver/section-cards"
