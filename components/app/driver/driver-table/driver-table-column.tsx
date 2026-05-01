@@ -1,4 +1,3 @@
-// columns/driver-columns.tsx
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -6,6 +5,7 @@ import {
   IconCircleCheckFilled,
   IconLoader,
   IconDotsVertical,
+  IconCircleX,
 } from "@tabler/icons-react"
 import {
   DropdownMenu,
@@ -15,19 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { Eye } from "lucide-react"
+import { ListDriverDTO } from "@/actions/drivers/listDrivers"
+import { formatDistanceToNow } from "date-fns"
 
-export type Driver = {
-  id: number
-  name: string
-  status: "Active" | "Inactive" | "Suspended"
-  trips: number
-  rating: number
-  acceptanceRate: string
-  cancellationRate: string
-  earnings: string
-}
-
-function DriverActions({ driver }: { driver: Driver }) {
+function DriverActions({ driver }: { driver: ListDriverDTO }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -42,7 +33,7 @@ function DriverActions({ driver }: { driver: Driver }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
         <DropdownMenuItem asChild>
-          <Link href="#">
+          <Link href={`/drivers/${driver.identifier}`}>
             <Eye /> View
           </Link>
         </DropdownMenuItem>
@@ -51,34 +42,68 @@ function DriverActions({ driver }: { driver: Driver }) {
   )
 }
 
-export const driverColumns: ColumnDef<Driver>[] = [
+export const driverColumns: ColumnDef<ListDriverDTO>[] = [
   {
-    accessorKey: "name",
-    header: "Driver",
+    accessorKey: "Full Name",
+    header: "Full Name",
+    cell: ({ row }) => (
+      <span>{`${row.original.firstName} ${row.original.lastName}`}</span>
+    ),
+  },
+  {
+    accessorKey: "Email Address",
+    header: "Email Address",
+    cell: ({ row }) => <span>{row.original.email}</span>,
+  },
+  {
+    accessorKey: "Mobile Number",
+    header: "Mobile Number",
+    cell: ({ row }) => <span>{row.original.mobileNumber}</span>,
+  },
+  {
+    accessorKey: "Last Logged In At",
+    header: "Last Logged In At",
+    cell: ({ row }) => (
+      <span>
+        {row.original.lastLoggedInAt
+          ? formatDistanceToNow(new Date(row.original.lastLoggedInAt), {
+              addSuffix: true,
+            })
+          : "Never"}
+      </span>
+    ),
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status
-      const isActive = status === "Active"
-      return (
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {isActive ? (
+
+      const statuses = {
+        approved: (
+          <span className="flex items-center">
             <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-          ) : (
-            <IconLoader />
-          )}
-          {status}
+            Approved
+          </span>
+        ),
+        rejected: (
+          <span className="flex items-center">
+            <IconCircleX className="fill-red-500 dark:fill-red-400" /> Rejected
+          </span>
+        ),
+        pending: (
+          <span className="flex items-center">
+            <IconLoader /> Pending Approval
+          </span>
+        ),
+      }
+      return (
+        <Badge variant="outline" className="p-5 text-muted-foreground">
+          {statuses[status]}
         </Badge>
       )
     },
   },
-  { accessorKey: "trips", header: "Total Trips" },
-  { accessorKey: "rating", header: "Avg. Rating" },
-  { accessorKey: "acceptanceRate", header: "Acceptance Rate" },
-  { accessorKey: "cancellationRate", header: "Cancellation Rate" },
-  { accessorKey: "earnings", header: "Avg. Earnings / Trip" },
   {
     id: "actions",
     cell: ({ row }) => <DriverActions driver={row.original} />,

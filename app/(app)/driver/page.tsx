@@ -2,8 +2,9 @@ import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import { SectionCards } from "@/components/app/driver/section-cards"
 import { DriversTable } from "@/components/app/driver/driver-table"
+import listDrivers from "@/actions/drivers/listDrivers"
 
-export default function Page() {
+export default async function Page() {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: "Drivers",
@@ -11,6 +12,9 @@ export default function Page() {
     },
   ]
 
+  const { drivers, paginationMeta } = await listDrivers()
+
+  console.log(drivers, paginationMeta)
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -24,7 +28,7 @@ export default function Page() {
             </div>
           </div>
           <SectionCards />
-          <DriversTable />
+          <DriversTable drivers={drivers} paginationMeta={paginationMeta} />
         </div>
       </div>
     </AppLayout>

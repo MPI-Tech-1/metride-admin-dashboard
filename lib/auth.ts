@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import HttpClient from "./http-client"
+import HttpClient from "@/lib/http-client"
 import axios from "axios"
 
 interface AuthApiResponse {
@@ -31,8 +31,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           const { apiResponse } = await HttpClient.post({
-            endpointUrl:
-              "https://api.stage.metride.app/api/v1/admins/authentication/authenticate",
+            endpointUrl: `${process.env.API_BASE_URL}/authentication/authenticate`,
             dataPayload: {
               email: credentials?.email,
               password: credentials?.password,

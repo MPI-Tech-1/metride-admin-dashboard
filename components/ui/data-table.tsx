@@ -47,13 +47,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import type PaginationMeta from "@/types/pagination-meta"
 
 interface DataTableProps<TData> {
   data: TData[]
   columns: ColumnDef<TData>[]
+  paginationMeta: PaginationMeta
+  onPageChange: (page: number) => void
+  onPageSizeChange: (pageSize: number) => void
 }
 
-export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  data,
+  columns,
+  paginationMeta,
+  onPageChange,
+  onPageSizeChange,
+}: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -61,10 +71,6 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
 
   const table = useReactTable({
     data,
@@ -74,14 +80,19 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
       columnVisibility,
       rowSelection,
       columnFilters,
-      pagination,
+      pagination: {
+        pageIndex: paginationMeta.currentPage - 1, // TanStack is 0-indexed
+        pageSize: paginationMeta.perPage,
+      },
     },
+    // Hand pagination control over to the server
+    manualPagination: true,
+    pageCount: paginationMeta.lastPage,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -89,6 +100,9 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
+
+  const canPreviousPage = paginationMeta.currentPage > paginationMeta.firstPage
+  const canNextPage = paginationMeta.currentPage < paginationMeta.lastPage
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -179,8 +193,7 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
         {/* Pagination */}
         <div className="flex items-center justify-between px-4">
           <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {paginationMeta.total} total row(s)
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
@@ -188,13 +201,14 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
                 Rows per page
               </Label>
               <Select
-                value={`${table.getState().pagination.pageSize}`}
-                onValueChange={(value) => table.setPageSize(Number(value))}
+                value={`${paginationMeta.perPage}`}
+                onValueChange={(value) => {
+                  onPageSizeChange(Number(value))
+                  onPageChange(1) // reset to first page on page size change
+                }}
               >
                 <SelectTrigger size="sm" className="w-20" id="rows-per-page">
-                  <SelectValue
-                    placeholder={table.getState().pagination.pageSize}
-                  />
+                  <SelectValue placeholder={paginationMeta.perPage} />
                 </SelectTrigger>
                 <SelectContent side="top">
                   {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -205,16 +219,17 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
                 </SelectContent>
               </Select>
             </div>
+
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Page {paginationMeta.currentPage} of {paginationMeta.lastPage}
             </div>
+
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => onPageChange(paginationMeta.firstPage)}
+                disabled={!canPreviousPage}
               >
                 <span className="sr-only">Go to first page</span>
                 <IconChevronsLeft />
@@ -223,8 +238,8 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
                 variant="outline"
                 className="size-8"
                 size="icon"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => onPageChange(paginationMeta.currentPage - 1)}
+                disabled={!canPreviousPage}
               >
                 <span className="sr-only">Go to previous page</span>
                 <IconChevronLeft />
@@ -233,8 +248,8 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
                 variant="outline"
                 className="size-8"
                 size="icon"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
+                onClick={() => onPageChange(paginationMeta.currentPage + 1)}
+                disabled={!canNextPage}
               >
                 <span className="sr-only">Go to next page</span>
                 <IconChevronRight />
@@ -243,8 +258,8 @@ export function DataTable<TData>({ data, columns }: DataTableProps<TData>) {
                 variant="outline"
                 className="hidden size-8 lg:flex"
                 size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
+                onClick={() => onPageChange(paginationMeta.lastPage)}
+                disabled={!canNextPage}
               >
                 <span className="sr-only">Go to last page</span>
                 <IconChevronsRight />
