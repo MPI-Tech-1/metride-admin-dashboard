@@ -33,7 +33,7 @@ function DriverActions({ driver }: { driver: ListDriverDTO }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
         <DropdownMenuItem asChild>
-          <Link href={`/drivers/${driver.identifier}`}>
+          <Link href={`/driver/${driver.identifier}`}>
             <Eye /> View
           </Link>
         </DropdownMenuItem>
