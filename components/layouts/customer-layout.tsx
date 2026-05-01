@@ -1,3 +1,4 @@
+import Link from "next/link"
 import * as React from "react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { IconMail, IconPhone } from "@tabler/icons-react"
@@ -5,6 +6,8 @@ import getInitials from "@/lib/get-initials"
 import { CustomerDetailDTO } from "@/actions/customers/getCustomer"
 
 interface CustomerLayoutProps {
+  customerId: string
+  activeTab: "overview" | "bookings"
   customer: Pick<
     CustomerDetailDTO,
     "firstName" | "lastName" | "email" | "mobileNumber"
@@ -14,15 +17,30 @@ interface CustomerLayoutProps {
 }
 
 const CustomerLayout = ({
+  customerId,
+  activeTab,
   customer,
   children,
   header,
 }: CustomerLayoutProps) => {
+  const tabs = [
+    {
+      href: `/customers/${customerId}`,
+      title: "Overview",
+      isActive: activeTab === "overview",
+    },
+    {
+      href: `/customers/${customerId}/bookings`,
+      title: "Bookings",
+      isActive: activeTab === "bookings",
+    },
+  ]
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden">
-      <div className="custom-scrollbar flex w-full flex-col gap-6 overflow-y-auto px-4 py-4 transition-all duration-300 lg:px-6">
+    <div className="flex h-[calc(100vh-4rem)] w-full flex-col overflow-hidden">
+      <div className="custom-scrollbar flex w-full flex-col gap-6 overflow-y-auto">
         {/* Header */}
-        <div className="mb-2 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        <div className="mb-2 flex flex-col items-start justify-between gap-4 px-4 pt-4 md:flex-row md:items-center lg:px-6">
           <div className="flex flex-col gap-2">
             <Avatar className="h-20 w-20 border-2 border-primary/10">
               <AvatarFallback className="bg-primary/5 text-xl font-bold">
@@ -50,16 +68,24 @@ const CustomerLayout = ({
         </div>
 
         {/* Tabs navigation */}
-        <div className="flex gap-6 border-b border-border">
-          <span className="border-b-2 border-primary pb-2 text-sm font-medium">
-            Overview
-          </span>
+        <div className="flex gap-6 border-b border-border px-4 lg:px-6">
+          {tabs.map((tab, index) => (
+            <Link
+              key={index}
+              href={tab.href}
+              className={`pb-2 text-sm transition ${
+                tab.isActive
+                  ? "border-b-2 border-primary font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.title}
+            </Link>
+          ))}
         </div>
 
-        {/* Content */}
-        <div className="custom-scrollbar flex-1 overflow-y-auto">
-          {children}
-        </div>
+        {/* Tab content — no horizontal padding; children control their own */}
+        <div>{children}</div>
       </div>
     </div>
   )

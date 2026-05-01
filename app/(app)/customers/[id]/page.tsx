@@ -25,16 +25,18 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
-        <CustomerLayout
-          customer={{
-            firstName: customer.firstName,
-            lastName: customer.lastName,
-            email: customer.email,
-            mobileNumber: customer.mobileNumber,
-          }}
-        >
-          <div className="grid grid-cols-1 gap-6 pb-6">
+      <CustomerLayout
+        customerId={id}
+        activeTab="overview"
+        customer={{
+          firstName: customer.firstName,
+          lastName: customer.lastName,
+          email: customer.email,
+          mobileNumber: customer.mobileNumber,
+        }}
+      >
+        <div className="px-4 pb-6 lg:px-6">
+          <div className="grid grid-cols-1 gap-6">
             <div className="rounded-lg border p-4 shadow-sm sm:p-6">
               <div className="mb-6">
                 <h3 className="text-base font-semibold sm:text-lg">
@@ -78,8 +80,8 @@ export default async function Page({ params }: PageProps) {
               </div>
             </div>
           </div>
-        </CustomerLayout>
-      </div>
+        </div>
+      </CustomerLayout>
     </AppLayout>
   )
 }
