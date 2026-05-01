@@ -30,6 +30,7 @@ export function LoginForm({
       redirect: false,
     })
 
+    console.log("result => ", result)
     setIsLoading(false)
 
     if (result?.error) {
@@ -42,7 +43,13 @@ export function LoginForm({
     }
 
     toast.success("Authentication successful.")
-    router.push(result?.url ?? "/dashboard")
+
+    const callbackUrl = result?.url
+      ? (new URL(result.url).searchParams.get("callbackUrl") ?? "/dashboard")
+      : "/dashboard"
+    console.log("callbackUrl => ", callbackUrl)
+
+    router.push(callbackUrl)
   }
 
   return (
