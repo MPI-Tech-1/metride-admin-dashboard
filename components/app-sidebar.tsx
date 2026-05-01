@@ -21,9 +21,8 @@ import Link from "next/link"
 const navMain = [
   {
     title: "Customers",
-    url: "#",
+    url: "/customers",
     icon: Users,
-    isActive: true,
   },
   {
     title: "Drivers",
@@ -32,9 +31,8 @@ const navMain = [
   },
   {
     title: "Bookings",
-    url: "#",
+    url: "/booking",
     icon: CalendarCheck,
-    items: [],
   },
 ]
 

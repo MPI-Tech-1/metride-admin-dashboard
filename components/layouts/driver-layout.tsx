@@ -11,8 +11,10 @@ import {
 import { Badge } from "@/components/ui/badge"
 import getInitials from "@/lib/get-initials"
 import { DriverDetailDTO } from "@/actions/drivers/getDriver"
+
 interface DriverLayoutProps {
-  activeTab: "overview"
+  driverId: string
+  activeTab: "overview" | "bookings"
   children: React.ReactNode
   driver: Pick<
     DriverDetailDTO,
@@ -27,6 +29,7 @@ interface DriverLayoutProps {
 }
 
 const DriverLayout = ({
+  driverId,
   activeTab,
   driver,
   children,
@@ -34,9 +37,14 @@ const DriverLayout = ({
 }: DriverLayoutProps) => {
   const driverTabs = [
     {
-      href: "#",
+      href: `/driver/${driverId}`,
       title: "Overview",
       isActive: activeTab === "overview",
+    },
+    {
+      href: `/driver/${driverId}/bookings`,
+      title: "Bookings",
+      isActive: activeTab === "bookings",
     },
   ]
 
@@ -47,10 +55,10 @@ const DriverLayout = ({
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden">
-      <div className="custom-scrollbar flex w-full flex-col gap-6 overflow-y-auto px-4 py-4 transition-all duration-300 lg:px-6">
+    <div className="flex h-[calc(100vh-4rem)] w-full flex-col overflow-hidden">
+      <div className="custom-scrollbar flex w-full flex-col gap-6 overflow-y-auto">
         {/* Header */}
-        <div className="mb-2 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        <div className="mb-2 flex flex-col items-start justify-between gap-4 px-4 pt-4 md:flex-row md:items-center lg:px-6">
           <div>
             <Avatar className="h-20 w-20 border-2 border-primary/10">
               <AvatarImage
@@ -87,7 +95,7 @@ const DriverLayout = ({
         </div>
 
         {/* Tabs navigation */}
-        <div className="flex gap-6 border-b border-border">
+        <div className="flex gap-6 border-b border-border px-4 lg:px-6">
           {driverTabs.map((driverTab, index) => (
             <Link
               key={index}
@@ -103,8 +111,8 @@ const DriverLayout = ({
           ))}
         </div>
 
-        {/* Tab content */}
-        <div className="custom-scrollbar flex-1 overflow-y-auto">
+        {/* Tab content — no horizontal padding; children control their own */}
+        <div>
           {children}
         </div>
       </div>

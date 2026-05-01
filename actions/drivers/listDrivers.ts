@@ -26,14 +26,16 @@ interface ListDriversResponse {
 export default async function listDrivers({
   page = 1,
   limit = 10,
+  searchQuery,
 }: {
   page?: number
   limit?: number
+  searchQuery?: string
 } = {}): Promise<{ drivers: ListDriverDTO[]; paginationMeta: PaginationMeta }> {
   try {
     const { data } = await httpClientInstance.get<ListDriversResponse>(
       `/driver-management/drivers`,
-      { params: { page, limit } }
+      { params: { page, limit, ...(searchQuery ? { searchQuery } : {}) } }
     )
     return {
       drivers: data.results.drivers,

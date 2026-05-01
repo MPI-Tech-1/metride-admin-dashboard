@@ -42,8 +42,8 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
         <DriverLayout
+          driverId={id}
           activeTab="overview"
           driver={{
             firstName: driver.firstName,
@@ -60,7 +60,8 @@ export default async function Page({ params }: PageProps) {
             />
           }
         >
-          <div className="grid grid-cols-1 gap-6 pb-3">
+          <div className="space-y-6 px-4 pb-6 lg:px-6">
+          <div className="grid grid-cols-1 gap-6">
             {/* Personal Information (3/4) */}
             <div className="rounded-lg border p-4 shadow-sm sm:p-6 lg:col-span-8">
               <div className="mb-4 flex items-start justify-between">
@@ -314,8 +315,8 @@ export default async function Page({ params }: PageProps) {
               url={driver.driverDocument.vehiclePhotoUrl}
             />
           </div>
+          </div>
         </DriverLayout>
-      </div>
     </AppLayout>
   )
 }
