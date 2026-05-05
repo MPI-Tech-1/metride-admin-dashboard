@@ -14,7 +14,7 @@ import { DriverDetailDTO } from "@/actions/drivers/getDriver"
 
 interface DriverLayoutProps {
   driverId: string
-  activeTab: "overview" | "bookings"
+  activeTab: "overview" | "bookings" | "earnings" | "payouts"
   children: React.ReactNode
   driver: Pick<
     DriverDetailDTO,
@@ -45,6 +45,16 @@ const DriverLayout = ({
       href: `/driver/${driverId}/bookings`,
       title: "Bookings",
       isActive: activeTab === "bookings",
+    },
+    {
+      href: `/driver/${driverId}/earnings`,
+      title: "Earnings",
+      isActive: activeTab === "earnings",
+    },
+    {
+      href: `/driver/${driverId}/payouts`,
+      title: "Payouts",
+      isActive: activeTab === "payouts",
     },
   ]
 

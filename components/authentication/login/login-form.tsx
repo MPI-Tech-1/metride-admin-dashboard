@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -14,6 +14,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -30,7 +31,6 @@ export function LoginForm({
       redirect: false,
     })
 
-    console.log("result => ", result)
     setIsLoading(false)
 
     if (result?.error) {
@@ -44,11 +44,7 @@ export function LoginForm({
 
     toast.success("Authentication successful.")
 
-    const callbackUrl = result?.url
-      ? (new URL(result.url).searchParams.get("callbackUrl") ?? "/dashboard")
-      : "/dashboard"
-    console.log("callbackUrl => ", callbackUrl)
-
+    const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
     router.push(callbackUrl)
   }
 
