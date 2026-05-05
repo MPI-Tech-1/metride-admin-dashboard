@@ -1,11 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 import { formatDistanceToNow } from "date-fns"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { DriverWalletTransactionDTO } from "@/actions/wallet/listDriverTransactions"
-import { ProcessPayoutModal } from "@/components/app/wallet/process-payout-modal"
+import { formatNaira } from "@/lib/format-currency"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,59 +14,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-function formatAmount(amount: number) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
-
-const isPayoutRequest = (tx: DriverWalletTransactionDTO) =>
-  tx.typeOfTransaction === "debit" && tx.status === "pending"
 
 function TransactionActions({ tx }: { tx: DriverWalletTransactionDTO }) {
-  const [processOpen, setProcessOpen] = useState(false)
+  if (!tx.providerTransactionReference) return null
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
-          {isPayoutRequest(tx) && (
-            <DropdownMenuItem onClick={() => setProcessOpen(true)}>
-              Process transaction
-            </DropdownMenuItem>
-          )}
-          {tx.providerTransactionReference && (
-            <DropdownMenuItem
-              onClick={() =>
-                navigator.clipboard.writeText(tx.providerTransactionReference!)
-              }
-            >
-              Copy provider reference
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {isPayoutRequest(tx) && (
-        <ProcessPayoutModal
-          transaction={tx}
-          open={processOpen}
-          onClose={() => setProcessOpen(false)}
-        />
-      )}
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+        >
+          <IconDotsVertical />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuItem
+          onClick={() =>
+            navigator.clipboard.writeText(tx.providerTransactionReference!)
+          }
+        >
+          Copy provider reference
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
@@ -96,7 +68,7 @@ export const driverTransactionColumns: ColumnDef<DriverWalletTransactionDTO>[] =
             }
           >
             {typeOfTransaction === "credit" ? "+" : "-"}
-            {formatAmount(amount)}
+            {formatNaira(amount)}
           </span>
         )
       },

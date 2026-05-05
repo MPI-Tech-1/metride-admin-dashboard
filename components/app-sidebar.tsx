@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { Users, CarFront, CalendarCheck, LayoutDashboard, Wallet } from "lucide-react"
+import {
+  Users,
+  CarFront,
+  CalendarCheck,
+  LayoutDashboard,
+  Wallet,
+} from "lucide-react"
 import { useSession } from "next-auth/react"
 
 import { NavMain } from "@/components/nav-main"
@@ -44,6 +50,7 @@ const navMain = [
     url: "#",
     icon: Wallet,
     items: [
+      { title: "Payout", url: "/wallet/payouts" },
       { title: "Driver", url: "/wallet/driver" },
     ],
   },
