@@ -1,6 +1,7 @@
 "use client"
 
 import { useTransition, useState } from "react"
+import { useRouter } from "next/navigation"
 import { ColumnDef } from "@tanstack/react-table"
 import { formatDistanceToNow, format } from "date-fns"
 import { IconDotsVertical } from "@tabler/icons-react"
@@ -74,6 +75,7 @@ function TripProgressBadge({ progress }: { progress: string }) {
 }
 
 function BookingRowActions({ booking }: { booking: ListBookingDTO }) {
+  const router = useRouter()
   const [cancelOpen, setCancelOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [isCancelling, startCancel] = useTransition()
@@ -118,7 +120,11 @@ function BookingRowActions({ booking }: { booking: ListBookingDTO }) {
             Copy booking ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>View details</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => router.push(`/booking/${booking.identifier}`)}
+          >
+            View details
+          </DropdownMenuItem>
           <DropdownMenuItem>View customer</DropdownMenuItem>
           {!booking.assignedDriver && (
             <DropdownMenuItem onClick={() => setAssignOpen(true)}>
