@@ -5,6 +5,7 @@ import { BreadcrumbItem } from "@/types/breadcrumb"
 import { BookingSectionCards } from "@/components/app/booking/section-cards"
 import { BookingsTable } from "@/components/app/booking/booking-table"
 import listBookings from "@/actions/bookings/listBookings"
+import getBookingMetrics from "@/actions/dashboard/getBookingMetrics"
 
 export default async function Page() {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -14,7 +15,10 @@ export default async function Page() {
     },
   ]
 
-  const { bookings, paginationMeta } = await listBookings()
+  const [{ bookings, paginationMeta }, metrics] = await Promise.all([
+    listBookings(),
+    getBookingMetrics(),
+  ])
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -26,7 +30,7 @@ export default async function Page() {
               View and manage all customer ride bookings.
             </p>
           </div>
-          <BookingSectionCards />
+          <BookingSectionCards metrics={metrics} />
           <BookingsTable bookings={bookings} paginationMeta={paginationMeta} />
         </div>
       </div>

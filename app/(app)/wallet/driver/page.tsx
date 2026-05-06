@@ -3,8 +3,9 @@ export const dynamic = "force-dynamic"
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import { DriverTransactionsTable } from "@/components/app/wallet/driver-transactions-table"
-import { WalletTransactionSectionCards } from "@/components/app/wallet/section-cards"
+import { WalletMetricCards } from "@/components/app/wallet/wallet-metric-cards"
 import listDriverTransactions from "@/actions/wallet/listDriverTransactions"
+import getWalletTransactionMetrics from "@/actions/dashboard/getWalletTransactionMetrics"
 
 export default async function Page() {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -12,13 +13,10 @@ export default async function Page() {
     { title: "Driver", href: "#" },
   ]
 
-  const { transactions, paginationMeta } = await listDriverTransactions({
-    limit: 100,
-  })
-
-  const pending = transactions.filter((t) => t.status === "pending").length
-  const completed = transactions.filter((t) => t.status === "completed").length
-  const failed = transactions.filter((t) => t.status === "failed").length
+  const [{ transactions, paginationMeta }, metrics] = await Promise.all([
+    listDriverTransactions({ limit: 100 }),
+    getWalletTransactionMetrics(),
+  ])
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -30,11 +28,7 @@ export default async function Page() {
               View all wallet transactions made by drivers on the platform.
             </p>
           </div>
-          <WalletTransactionSectionCards
-            pending={pending}
-            completed={completed}
-            failed={failed}
-          />
+          <WalletMetricCards metrics={metrics} />
           <DriverTransactionsTable
             transactions={transactions}
             paginationMeta={paginationMeta}

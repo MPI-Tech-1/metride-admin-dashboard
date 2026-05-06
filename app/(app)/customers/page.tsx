@@ -5,6 +5,7 @@ import { BreadcrumbItem } from "@/types/breadcrumb"
 import { CustomerSectionCards } from "@/components/app/customer/section-cards"
 import { CustomersTable } from "@/components/app/customer/customer-table"
 import listCustomers from "@/actions/customers/listCustomers"
+import getCustomerMetrics from "@/actions/dashboard/getCustomerMetrics"
 
 export default async function Page() {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -14,7 +15,10 @@ export default async function Page() {
     },
   ]
 
-  const { customers, paginationMeta } = await listCustomers()
+  const [{ customers, paginationMeta }, metrics] = await Promise.all([
+    listCustomers(),
+    getCustomerMetrics(),
+  ])
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -26,7 +30,7 @@ export default async function Page() {
               View and manage all registered customer accounts.
             </p>
           </div>
-          <CustomerSectionCards />
+          <CustomerSectionCards metrics={metrics} />
           <CustomersTable customers={customers} paginationMeta={paginationMeta} />
         </div>
       </div>

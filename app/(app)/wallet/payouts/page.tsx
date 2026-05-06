@@ -3,7 +3,9 @@ export const dynamic = "force-dynamic"
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import { PayoutsTable } from "@/components/app/wallet/payouts-table"
+import { PayoutSectionCards } from "@/components/app/wallet/payout-section-cards"
 import listDriverWithdrawalRequests from "@/actions/wallet/listDriverWithdrawalRequests"
+import getPayoutMetrics from "@/actions/dashboard/getPayoutMetrics"
 
 export default async function Page() {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -11,8 +13,10 @@ export default async function Page() {
     { title: "Payouts", href: "#" },
   ]
 
-  const { withdrawalRequests, paginationMeta } =
-    await listDriverWithdrawalRequests({ limit: 100 })
+  const [{ withdrawalRequests, paginationMeta }, metrics] = await Promise.all([
+    listDriverWithdrawalRequests({ limit: 100 }),
+    getPayoutMetrics(),
+  ])
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -24,6 +28,7 @@ export default async function Page() {
               Review and process driver withdrawal requests.
             </p>
           </div>
+          <PayoutSectionCards metrics={metrics} />
           <PayoutsTable
             withdrawalRequests={withdrawalRequests}
             paginationMeta={paginationMeta}

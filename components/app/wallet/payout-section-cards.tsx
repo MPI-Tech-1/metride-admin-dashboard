@@ -1,33 +1,43 @@
 import {
-  IconCalendarCheck,
-  IconCalendarClock,
-  IconCalendarX,
-  IconCalendar,
+  IconClock,
+  IconCircleCheck,
+  IconCircleX,
+  IconCoin,
 } from "@tabler/icons-react"
-import {
-  Card,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { BookingMetrics } from "@/actions/dashboard/getBookingMetrics"
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { PayoutMetrics } from "@/actions/dashboard/getPayoutMetrics"
+import { formatNaira } from "@/lib/format-currency"
 
-interface BookingSectionCardsProps {
-  metrics: BookingMetrics
+interface PayoutSectionCardsProps {
+  metrics: PayoutMetrics
 }
 
-export function BookingSectionCards({ metrics }: BookingSectionCardsProps) {
+export function PayoutSectionCards({ metrics }: PayoutSectionCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {metrics.totalBookingsForPastMonth}
+            {metrics.totalPendingPayouts}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Total Bookings <IconCalendar className="size-4" />
+            Pending <IconClock className="size-4 text-yellow-500" />
+          </div>
+          <div className="text-muted-foreground">Awaiting approval</div>
+        </CardFooter>
+      </Card>
+
+      <Card className="@container/card">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {metrics.totalApprovedPayoutsForPastMonth}
+          </CardTitle>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Approved <IconCircleCheck className="size-4 text-green-500" />
           </div>
           <div className="text-muted-foreground">Past month</div>
         </CardFooter>
@@ -36,40 +46,26 @@ export function BookingSectionCards({ metrics }: BookingSectionCardsProps) {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {metrics.totalCompletedBookingsForPastMonth}
+            {metrics.totalRejectedPayoutsForPastMonth}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Completed <IconCalendarCheck className="size-4" />
+            Rejected <IconCircleX className="size-4 text-red-500" />
           </div>
-          <div className="text-muted-foreground">Successfully fulfilled rides</div>
+          <div className="text-muted-foreground">Past month</div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            0
+            {formatNaira(metrics.totalApprovedPayoutAmountForPastMonth)}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Pending <IconCalendarClock className="size-4" />
-          </div>
-          <div className="text-muted-foreground">Awaiting driver assignment</div>
-        </CardFooter>
-      </Card>
-
-      <Card className="@container/card">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {metrics.totalCancelledBookingsForPastMonth}
-          </CardTitle>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Cancelled <IconCalendarX className="size-4" />
+            Amount Paid Out <IconCoin className="size-4 text-green-500" />
           </div>
           <div className="text-muted-foreground">Past month</div>
         </CardFooter>
