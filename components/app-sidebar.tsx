@@ -7,6 +7,7 @@ import {
   CalendarCheck,
   LayoutDashboard,
   Wallet,
+  RadioTower,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 
@@ -44,6 +45,11 @@ const navMain = [
     title: "Bookings",
     url: "/booking",
     icon: CalendarCheck,
+  },
+  {
+    title: "Live Tracking",
+    url: "/tracking",
+    icon: RadioTower,
   },
   {
     title: "Wallet Transactions",
