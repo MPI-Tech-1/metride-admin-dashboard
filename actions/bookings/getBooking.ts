@@ -49,6 +49,11 @@ export interface BookingDetailDTO {
     amountPaid: number
   }
   bookingGpsLogs: BookingGpsLog[]
+  bookingReviews: {
+    identifier: string
+    rating: number
+    review: string
+  }[]
   createdAt: string
 }
 

@@ -9,6 +9,7 @@ import {
   IconCreditCard,
   IconMapPin,
   IconRoute,
+  IconStar,
   IconUser,
 } from "@tabler/icons-react"
 import getBooking from "@/actions/bookings/getBooking"
@@ -176,6 +177,45 @@ export default async function Page({ params }: PageProps) {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Reviews */}
+            {booking.bookingReviews.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <IconStar size={18} />
+                    Reviews ({booking.bookingReviews.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  {booking.bookingReviews.map((review) => (
+                    <div key={review.identifier} className="flex flex-col gap-1.5">
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <IconStar
+                            key={i}
+                            size={14}
+                            className={
+                              i < review.rating
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-muted-foreground/30"
+                            }
+                          />
+                        ))}
+                        <span className="ml-1 text-xs text-muted-foreground">
+                          {review.rating}/5
+                        </span>
+                      </div>
+                      {review.review && (
+                        <p className="text-sm text-muted-foreground">
+                          "{review.review}"
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Map */}
             <Card className="overflow-hidden">
