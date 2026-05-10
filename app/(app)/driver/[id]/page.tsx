@@ -238,6 +238,12 @@ export default async function Page({ params }: PageProps) {
                           </span>
                         </div>
 
+                        {step.performedByAdmin && (
+                          <p className="text-xs text-muted-foreground">
+                            By {step.performedByAdmin.fullName}
+                          </p>
+                        )}
+
                         {step.reason && (
                           <p className="text-sm text-muted-foreground">
                             {step.reason}

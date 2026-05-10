@@ -53,6 +53,10 @@ export interface DriverDetailDTO {
   }
   driverApprovalSteps: {
     identifier: string
+    performedByAdmin: {
+      identifier: string
+      fullName: string
+    } | null
     status: string
     reason: string | null
     createdAt: string
