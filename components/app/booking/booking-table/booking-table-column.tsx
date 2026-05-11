@@ -28,14 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
-function formatAmount(amount: number) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
+import { formatNaira } from "@/lib/format-currency"
 
 function StatusBadge({ status }: { status: string }) {
   const variants: Record<string, React.ComponentProps<typeof Badge>["variant"]> = {
@@ -310,7 +303,7 @@ export const bookingColumns: ColumnDef<ListBookingDTO>[] = [
       const { paymentMethod, basePrice, paymentStatus } = row.original.bookingPayment
       return (
         <div className="min-w-[120px]">
-          <p className="font-medium">{formatAmount(basePrice)}</p>
+          <p className="font-medium">{formatNaira(basePrice)}</p>
           <p className="text-xs capitalize text-muted-foreground">
             {paymentMethod} · {paymentStatus}
           </p>

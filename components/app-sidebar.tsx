@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Wallet,
   RadioTower,
+  Settings,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 
@@ -58,6 +59,15 @@ const navMain = [
     items: [
       { title: "Payout", url: "/wallet/payouts" },
       { title: "Driver", url: "/wallet/driver" },
+    ],
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    items: [
+      { title: "Cities", url: "/settings/cities" },
+      { title: "Popular routes", url: "/settings/popular-locations" },
     ],
   },
 ]

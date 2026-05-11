@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { toast } from "sonner"
+import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -16,6 +17,27 @@ export function LoginForm({
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+
+  function getPostLoginPath() {
+    const callbackUrl = searchParams.get("callbackUrl")
+
+    if (!callbackUrl || callbackUrl === "/" || callbackUrl === "/login") {
+      return "/dashboard"
+    }
+
+    try {
+      // Handle absolute callback URLs (e.g. from auth providers) safely.
+      const parsed = new URL(callbackUrl, window.location.origin)
+      const normalizedPath = `${parsed.pathname}${parsed.search}${parsed.hash}`
+      if (!normalizedPath || normalizedPath === "/" || normalizedPath === "/login") {
+        return "/dashboard"
+      }
+      return normalizedPath
+    } catch {
+      return "/dashboard"
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -43,48 +65,71 @@ export function LoginForm({
     }
 
     toast.success("Authentication successful.")
-
-    const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
-    router.push(callbackUrl)
+    router.push(getPostLoginPath())
   }
 
   return (
     <form
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("flex flex-col gap-6 rounded-2xl border bg-card p-6 shadow-sm", className)}
       onSubmit={handleSubmit}
       {...props}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
           <p className="text-sm text-balance text-muted-foreground">
-            Enter your email below to login to your account
+            Sign in to manage bookings, drivers, and customer activity.
           </p>
         </div>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="m@example.com"
-            required
-          />
+          <div className="relative">
+            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="admin@metride.com"
+              className="pl-9"
+              required
+            />
+          </div>
         </Field>
         <Field>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <a
               href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
+              className="ml-auto text-sm text-primary underline-offset-4 hover:underline"
             >
               Forgot your password?
             </a>
           </div>
-          <Input id="password" name="password" type="password" required />
+          <div className="relative">
+            <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              className="pl-9 pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeOff className="size-4" />
+              ) : (
+                <Eye className="size-4" />
+              )}
+            </button>
+          </div>
         </Field>
         <Field>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? "Logging in..." : "Login"}
           </Button>
         </Field>

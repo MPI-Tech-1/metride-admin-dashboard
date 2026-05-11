@@ -248,38 +248,6 @@ export default async function Page({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* GPS Logs */}
-            {booking.bookingGpsLogs.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    GPS Logs ({booking.bookingGpsLogs.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {booking.bookingGpsLogs.map((log, i) => (
-                      <div
-                        key={log.identifier}
-                        className="flex items-center justify-between px-6 py-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700">
-                            {i + 1}
-                          </span>
-                          <span className="font-mono text-xs text-muted-foreground">
-                            {log.gpsCoordinates}
-                          </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(log.createdAt), "MMM d, HH:mm:ss")}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Right column */}

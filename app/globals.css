@@ -127,3 +127,9 @@
     @apply font-sans;
     }
 }
+
+/* Google Places Autocomplete is portaled to <body>; keep it above Radix dialogs (z-50). */
+.pac-container {
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+}
