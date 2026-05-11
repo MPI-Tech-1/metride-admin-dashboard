@@ -37,6 +37,7 @@ interface DriverLocation {
   customerFullName: string
   lat: number
   lng: number
+  path: { lat: number; lng: number }[]
 }
 
 type DriverMap = Record<string, DriverLocation>
@@ -56,6 +57,53 @@ function MapController({ center }: { center: { lat: number; lng: number } }) {
     if (!map) return
     map.panTo(center)
   }, [map, center])
+
+  return null
+}
+
+function DriverPolylines({
+  drivers,
+}: {
+  drivers: Array<{ id: string; path: { lat: number; lng: number }[] }>
+}) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!map || drivers.length === 0) return
+
+    const palette = ["#2563EB", "#DC2626", "#16A34A", "#7C3AED", "#EA580C"]
+    const overlays: google.maps.Polyline[] = []
+
+    drivers.forEach((driver, index) => {
+      if (driver.path.length < 2) return
+
+      const color = palette[index % palette.length]
+
+      const outerPolyline = new window.google.maps.Polyline({
+        path: driver.path,
+        strokeColor: "#FFFFFF",
+        strokeOpacity: 0.95,
+        strokeWeight: 8,
+        geodesic: true,
+      })
+
+      const innerPolyline = new window.google.maps.Polyline({
+        path: driver.path,
+        strokeColor: color,
+        strokeOpacity: 0.95,
+        strokeWeight: 4,
+        geodesic: true,
+      })
+
+      outerPolyline.setMap(map)
+      innerPolyline.setMap(map)
+      overlays.push(outerPolyline, innerPolyline)
+    })
+
+    return () => {
+      overlays.forEach((overlay) => overlay.setMap(null))
+    }
+  }, [map, drivers])
 
   return null
 }
@@ -83,15 +131,28 @@ export function LiveTrackingMap() {
       const coords = parseCoords(data.gpsCoordinates)
       if (!coords) return
 
-      setDrivers((prev) => ({
-        ...prev,
-        [data.driver.identifier]: {
-          bookingIdentifier: data.identifier,
-          driverFullName: data.driver.fullName,
-          customerFullName: data.customer.fullName,
-          ...coords,
-        },
-      }))
+      setDrivers((prev) => {
+        const previousDriver = prev[data.driver.identifier]
+        const previousPath = previousDriver?.path ?? []
+        const lastPoint = previousPath[previousPath.length - 1]
+        const isSamePoint =
+          lastPoint?.lat === coords.lat && lastPoint?.lng === coords.lng
+
+        const nextPath = isSamePoint
+          ? previousPath
+          : [...previousPath, coords].slice(-60)
+
+        return {
+          ...prev,
+          [data.driver.identifier]: {
+            bookingIdentifier: data.identifier,
+            driverFullName: data.driver.fullName,
+            customerFullName: data.customer.fullName,
+            ...coords,
+            path: nextPath,
+          },
+        }
+      })
     })
 
     return () => {
@@ -112,20 +173,29 @@ export function LiveTrackingMap() {
           mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID ?? ""}
         >
           <MapController center={selectedCity} />
+          <DriverPolylines
+            drivers={driverEntries.map(([id, driver]) => ({
+              id,
+              path: driver.path,
+            }))}
+          />
 
           {driverEntries.map(([driverId, driver]) => (
             <AdvancedMarker
               key={driverId}
               position={{ lat: driver.lat, lng: driver.lng }}
-              title={`Customer: ${driver.customerFullName}`}
+              title={driver.driverFullName}
             >
-              <div className="flex flex-col items-center">
-                <div className="flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
-                  <IconCar size={13} />
-                  <span>{driver.driverFullName}</span>
+              <div className="group relative flex flex-col items-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white bg-primary text-primary-foreground shadow-lg">
+                  <IconCar size={15} />
                 </div>
-                <div className="mx-auto h-2 w-px bg-primary/70" />
-                <div className="h-2 w-2 rounded-full bg-primary shadow" />
+                <div className="pointer-events-none absolute -top-14 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 shadow transition-opacity duration-150 group-hover:opacity-100">
+                  <p>{driver.driverFullName}</p>
+                  <p className="text-[11px] text-background/80">
+                    {driver.customerFullName}
+                  </p>
+                </div>
               </div>
             </AdvancedMarker>
           ))}

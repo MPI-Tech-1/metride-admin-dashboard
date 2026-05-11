@@ -55,6 +55,7 @@ interface DataTableProps<TData> {
   paginationMeta: PaginationMeta
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
+  initialColumnVisibility?: VisibilityState
 }
 
 export function DataTable<TData>({
@@ -63,10 +64,11 @@ export function DataTable<TData>({
   paginationMeta,
   onPageChange,
   onPageSizeChange,
+  initialColumnVisibility,
 }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+    React.useState<VisibilityState>(initialColumnVisibility ?? {})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
