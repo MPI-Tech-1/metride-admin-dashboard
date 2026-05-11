@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { APIProvider } from "@vis.gl/react-google-maps"
 import { Pencil, Plus } from "lucide-react"
 import { toast } from "sonner"
@@ -38,6 +38,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  canonicalGpsString,
+  isValidGpsPair,
+} from "@/lib/gps-coordinates"
 
 const LOCATION_TYPES = [
   "residential_area",
@@ -63,20 +67,6 @@ function formatLocationType(type: string) {
     .split("_")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ")
-}
-
-function splitGps(value: string): { lat: string; lng: string } {
-  const parts = value.split(",").map((s) => s.trim())
-  return { lat: parts[0] ?? "", lng: parts[1] ?? "" }
-}
-
-function isValidGps(value: string): boolean {
-  const { lat, lng } = splitGps(value)
-  const la = Number(lat)
-  const ln = Number(lng)
-  if (!Number.isFinite(la) || !Number.isFinite(ln)) return false
-  if (la < -90 || la > 90 || ln < -180 || ln > 180) return false
-  return true
 }
 
 function PopularLocationFormFields({
@@ -260,15 +250,15 @@ export function PopularLocationsSection({
   function openEdit(loc: PopularLocationDTO) {
     setEditLoc(loc)
     setEditCityIdentifier(loc.city.identifier)
-    setEditName(loc.name)
-    setEditGps(loc.gpsCoordinates)
-    setEditType(loc.typeOfLocation)
+    setEditName(loc.name.trim())
+    setEditGps(canonicalGpsString(loc.gpsCoordinates))
+    setEditType(loc.typeOfLocation.trim())
     setEditIsActive(loc.isActive)
     setEditKey((k) => k + 1)
   }
 
   function submitCreate() {
-    if (!cityIdentifier || !name.trim() || !isValidGps(gpsCoordinates)) {
+    if (!cityIdentifier || !name.trim() || !isValidGpsPair(gpsCoordinates)) {
       toast.error("Select a city, enter a name, and valid GPS coordinates.")
       return
     }
@@ -291,7 +281,7 @@ export function PopularLocationsSection({
 
   function submitEdit() {
     if (!editLoc) return
-    if (!editCityIdentifier || !editName.trim() || !isValidGps(editGps)) {
+    if (!editCityIdentifier || !editName.trim() || !isValidGpsPair(editGps)) {
       toast.error("Select a city, enter a name, and valid GPS coordinates.")
       return
     }
@@ -313,16 +303,21 @@ export function PopularLocationsSection({
     })
   }
 
-  const canSubmitCreate =
-    Boolean(cityIdentifier) &&
-    name.trim().length > 0 &&
-    isValidGps(gpsCoordinates)
-
-  const canSubmitEdit =
-    Boolean(editLoc) &&
-    Boolean(editCityIdentifier) &&
-    editName.trim().length > 0 &&
-    isValidGps(editGps)
+  const citiesForEditDialog = useMemo(() => {
+    if (!editLoc) return cities
+    if (cities.some((c) => c.identifier === editLoc.city.identifier)) {
+      return cities
+    }
+    return [
+      {
+        identifier: editLoc.city.identifier,
+        name: editLoc.city.name,
+        latitude: editLoc.city.latitude,
+        longitude: editLoc.city.longitude,
+      },
+      ...cities,
+    ]
+  }, [cities, editLoc])
 
   return (
     <>
@@ -471,11 +466,7 @@ export function PopularLocationsSection({
             >
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={submitCreate}
-              disabled={pending || !canSubmitCreate}
-            >
+            <Button type="button" onClick={submitCreate} disabled={pending}>
               {pending ? "Saving…" : "Create"}
             </Button>
           </DialogFooter>
@@ -494,7 +485,7 @@ export function PopularLocationsSection({
           </DialogHeader>
           <div className="py-2">
             <PopularLocationFormFields
-              cities={cities}
+              cities={citiesForEditDialog}
               cityIdentifier={editCityIdentifier}
               onCityChange={setEditCityIdentifier}
               name={editName}
@@ -520,11 +511,7 @@ export function PopularLocationsSection({
             >
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={submitEdit}
-              disabled={pending || !canSubmitEdit}
-            >
+            <Button type="button" onClick={submitEdit} disabled={pending}>
               {pending ? "Saving…" : "Save changes"}
             </Button>
           </DialogFooter>

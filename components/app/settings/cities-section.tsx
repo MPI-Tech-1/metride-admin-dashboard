@@ -220,6 +220,14 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
 
   function submitEdit() {
     if (!editCity) return
+    if (
+      !editName.trim() ||
+      !editLatitude.trim() ||
+      !editLongitude.trim()
+    ) {
+      toast.error("Name and coordinates are required.")
+      return
+    }
     startTransition(async () => {
       const result = await updateCity({
         identifier: editCity.identifier,
@@ -422,16 +430,7 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
             >
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={submitEdit}
-              disabled={
-                pending ||
-                !editName.trim() ||
-                !editLatitude.trim() ||
-                !editLongitude.trim()
-              }
-            >
+            <Button type="button" onClick={submitEdit} disabled={pending}>
               {pending ? "Saving…" : "Save changes"}
             </Button>
           </DialogFooter>

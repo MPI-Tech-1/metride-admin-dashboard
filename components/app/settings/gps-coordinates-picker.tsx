@@ -1,6 +1,7 @@
 "use client"
 
 import { CityCoordinatesMap } from "@/components/app/settings/city-coordinate-picker"
+import { joinGps, splitGpsParts } from "@/lib/gps-coordinates"
 import {
   PlacesAutocompleteInput,
   type PlaceSelection,
@@ -8,15 +9,6 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-
-function splitGps(value: string): { lat: string; lng: string } {
-  const parts = value.split(",").map((s) => s.trim())
-  return { lat: parts[0] ?? "", lng: parts[1] ?? "" }
-}
-
-function joinGps(lat: string, lng: string) {
-  return `${lat.trim()}, ${lng.trim()}`
-}
 
 /** Map + Places + manual pair, inside existing `APIProvider`. */
 export function GpsCoordinatesPicker({
@@ -34,7 +26,7 @@ export function GpsCoordinatesPicker({
   disabled?: boolean
   showPlacesSearch: boolean
 }) {
-  const { lat, lng } = splitGps(value)
+  const { lat, lng } = splitGpsParts(value)
 
   function applyFromPlace(place: PlaceSelection) {
     onChange(joinGps(place.latitude, place.longitude))

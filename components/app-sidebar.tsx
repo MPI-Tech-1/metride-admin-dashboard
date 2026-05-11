@@ -68,6 +68,8 @@ const navMain = [
     items: [
       { title: "Cities", url: "/settings/cities" },
       { title: "Popular routes", url: "/settings/popular-locations" },
+      { title: "Ride types", url: "/settings/ride-types" },
+      { title: "Vehicles", url: "/settings/vehicles" },
     ],
   },
 ]
