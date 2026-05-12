@@ -20,7 +20,8 @@ export default async function updateVehicleMake({
       `/settings/vehicles/vehicle-makes/${identifier}`,
       payload
     )
-    revalidatePath("/settings/vehicles")
+    revalidatePath("/settings/vehicle-makes")
+    revalidatePath("/settings/vehicle-models")
     return { success: true, message: data.message }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

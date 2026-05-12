@@ -1,3 +1,5 @@
+import { Fragment } from "react"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -35,15 +37,17 @@ export default function Layout({ children, breadcrumbs }: LayoutProps) {
               />
               <Breadcrumb>
                 <BreadcrumbList>
-                  {breadcrumbs?.map((item, index) => (
-                    <>
-                      <BreadcrumbItem key={index} className="hidden md:block">
+                  {breadcrumbs?.map((item, index, arr) => (
+                    <Fragment key={`${item.href}-${item.title}-${index}`}>
+                      <BreadcrumbItem className="hidden md:block">
                         <BreadcrumbLink href={item.href}>
                           {item.title}
                         </BreadcrumbLink>
                       </BreadcrumbItem>
-                      <BreadcrumbSeparator className="hidden md:block" />
-                    </>
+                      {index < arr.length - 1 ? (
+                        <BreadcrumbSeparator className="hidden md:block" />
+                      ) : null}
+                    </Fragment>
                   ))}
                 </BreadcrumbList>
               </Breadcrumb>

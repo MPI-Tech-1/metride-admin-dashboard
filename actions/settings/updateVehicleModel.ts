@@ -21,7 +21,7 @@ export default async function updateVehicleModel({
       `/settings/vehicles/vehicle-models/${identifier}`,
       payload
     )
-    revalidatePath("/settings/vehicles")
+    revalidatePath("/settings/vehicle-models")
     return { success: true, message: data.message }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

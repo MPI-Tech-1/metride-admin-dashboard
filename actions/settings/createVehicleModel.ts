@@ -17,7 +17,7 @@ export default async function createVehicleModel(payload: {
       `/settings/vehicles/vehicle-models`,
       payload
     )
-    revalidatePath("/settings/vehicles")
+    revalidatePath("/settings/vehicle-models")
     return { success: true, message: data.message }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

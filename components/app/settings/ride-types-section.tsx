@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import Link from "next/link"
 import { Pencil, Plus } from "lucide-react"
 import { toast } from "sonner"
 
@@ -326,8 +327,22 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
     <>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-          Vehicle categories, seating, and fares. Prices are stored in{" "}
-          <span className="font-mono text-xs">kobo</span> and shown in naira.
+          Booking categories: seating and per-trip pricing. For manufacturer
+          names and trims, use{" "}
+          <Link
+            href="/settings/vehicle-makes"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            Vehicle makes
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/settings/vehicle-models"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            Vehicle models
+          </Link>
+          .
         </p>
         <Button type="button" size="sm" className="shrink-0 gap-1.5" onClick={openCreate}>
           <Plus className="size-4" />
