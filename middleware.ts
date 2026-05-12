@@ -15,5 +15,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!login|payment-success|api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    /*
+     * Skip auth for login, APIs, Next internals, favicon, and static assets in
+     * /public (e.g. logos) — otherwise /logo-*.png redirects to HTML and next/image breaks.
+     */
+    "/((?!login|payment-success|api|_next/static|_next/image|favicon\\.ico|logo-mark\\.png|logo-square\\.png).*)",
+  ],
 }

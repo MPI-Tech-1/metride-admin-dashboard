@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { toast } from "sonner"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { MetRideLogoMark } from "@/components/brand/met-ride-logos"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -76,6 +77,9 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
+          <div className="relative mb-1 size-16 shrink-0 overflow-hidden rounded-2xl bg-muted/50 ring-1 ring-border/60 lg:hidden">
+            <MetRideLogoMark fill priority />
+          </div>
           <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
           <p className="text-sm text-balance text-muted-foreground">
             Sign in to manage bookings, drivers, and customer activity.
