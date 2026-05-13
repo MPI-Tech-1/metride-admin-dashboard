@@ -4,6 +4,7 @@ import AppLayout from "@/components/layouts/app-layout"
 import { PopularLocationsSection } from "@/components/app/settings/popular-locations-section"
 import listCities from "@/actions/settings/listCities"
 import listPopularLocations from "@/actions/settings/listPopularLocations"
+import { getGoogleMapsClientConfig } from "@/lib/google-maps-client-config"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 
 export default async function Page() {
@@ -11,6 +12,7 @@ export default async function Page() {
     listPopularLocations(),
     listCities(),
   ])
+  const googleMaps = getGoogleMapsClientConfig()
 
   const breadcrumbs: BreadcrumbItem[] = [
     { title: "Settings", href: "#" },
@@ -28,7 +30,11 @@ export default async function Page() {
               booking.
             </p>
           </div>
-          <PopularLocationsSection locations={locations} cities={cities} />
+          <PopularLocationsSection
+            locations={locations}
+            cities={cities}
+            googleMaps={googleMaps}
+          />
         </div>
       </div>
     </AppLayout>

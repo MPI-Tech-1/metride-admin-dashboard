@@ -3,10 +3,12 @@ export const dynamic = "force-dynamic"
 import AppLayout from "@/components/layouts/app-layout"
 import { CitiesSection } from "@/components/app/settings/cities-section"
 import listCities from "@/actions/settings/listCities"
+import { getGoogleMapsClientConfig } from "@/lib/google-maps-client-config"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 
 export default async function Page() {
   const cities = await listCities()
+  const googleMaps = getGoogleMapsClientConfig()
 
   const breadcrumbs: BreadcrumbItem[] = [
     { title: "Settings", href: "#" },
@@ -23,7 +25,7 @@ export default async function Page() {
               Create and update cities with coordinates for your service areas.
             </p>
           </div>
-          <CitiesSection cities={cities} />
+          <CitiesSection cities={cities} googleMaps={googleMaps} />
         </div>
       </div>
     </AppLayout>

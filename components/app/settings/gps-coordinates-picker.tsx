@@ -18,6 +18,7 @@ export function GpsCoordinatesPicker({
   disabled,
   searchInstanceKey,
   showPlacesSearch,
+  mapId,
 }: {
   value: string
   onChange: (gps: string) => void
@@ -25,6 +26,7 @@ export function GpsCoordinatesPicker({
   searchInstanceKey: string | number
   disabled?: boolean
   showPlacesSearch: boolean
+  mapId: string
 }) {
   const { lat, lng } = splitGpsParts(value)
 
@@ -73,6 +75,7 @@ export function GpsCoordinatesPicker({
               longitude={lng}
               disabled={disabled}
               onPick={applyFromMap}
+              mapId={mapId}
             />
           </Field>
         </div>

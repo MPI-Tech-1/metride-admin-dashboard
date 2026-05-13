@@ -42,6 +42,10 @@ import {
   canonicalGpsString,
   isValidGpsPair,
 } from "@/lib/gps-coordinates"
+import {
+  isGoogleMapsClientReady,
+  type GoogleMapsClientConfig,
+} from "@/lib/google-maps-client"
 
 const LOCATION_TYPES = [
   "residential_area",
@@ -82,6 +86,7 @@ function PopularLocationFormFields({
   isActive,
   onIsActiveChange,
   mapsReady,
+  googleMaps,
   mapKey,
   searchKey,
   disabled,
@@ -98,6 +103,7 @@ function PopularLocationFormFields({
   isActive: boolean
   onIsActiveChange: (v: boolean) => void
   mapsReady: boolean
+  googleMaps: GoogleMapsClientConfig
   mapKey: string | number
   searchKey: string | number
   disabled?: boolean
@@ -180,7 +186,7 @@ function PopularLocationFormFields({
 
       {mapsReady ? (
         <APIProvider
-          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
+          apiKey={googleMaps.apiKey}
           libraries={["places", "marker"]}
         >
           <GpsCoordinatesPicker
@@ -190,6 +196,7 @@ function PopularLocationFormFields({
             searchInstanceKey={searchKey}
             disabled={disabled}
             showPlacesSearch
+            mapId={googleMaps.mapId}
           />
         </APIProvider>
       ) : (
@@ -200,6 +207,7 @@ function PopularLocationFormFields({
           searchInstanceKey={searchKey}
           disabled={disabled}
           showPlacesSearch={false}
+          mapId=""
         />
       )}
     </FieldGroup>
@@ -209,12 +217,13 @@ function PopularLocationFormFields({
 export function PopularLocationsSection({
   locations,
   cities,
+  googleMaps,
 }: {
   locations: PopularLocationDTO[]
   cities: CityDTO[]
+  googleMaps: GoogleMapsClientConfig
 }) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""
-  const mapsReady = Boolean(apiKey)
+  const mapsReady = isGoogleMapsClientReady(googleMaps)
 
   const [createOpen, setCreateOpen] = useState(false)
   const [editLoc, setEditLoc] = useState<PopularLocationDTO | null>(null)
@@ -348,9 +357,12 @@ export function PopularLocationsSection({
         <div className="rounded-xl border border-amber-200/80 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/35 dark:text-amber-50">
           <p className="font-medium">Maps search disabled</p>
           <p className="mt-1 text-xs leading-relaxed opacity-90">
-            Set <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code>{" "}
-            and <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_ID</code> for
-            map pick. You can still type coordinates manually.
+            Set <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">GOOGLE_MAPS_API_KEY</code> and{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">GOOGLE_MAPS_MAP_ID</code> on the server, or{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> and{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_ID</code> before{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">next build</code>. Both key and Map ID are
+            required. You can still type coordinates manually.
           </p>
         </div>
       )}
@@ -452,6 +464,7 @@ export function PopularLocationsSection({
               isActive={isActive}
               onIsActiveChange={setIsActive}
               mapsReady={mapsReady}
+              googleMaps={googleMaps}
               mapKey={`create-${createKey}`}
               searchKey={createKey}
               disabled={pending}
@@ -497,6 +510,7 @@ export function PopularLocationsSection({
               isActive={editIsActive}
               onIsActiveChange={setEditIsActive}
               mapsReady={mapsReady}
+              googleMaps={googleMaps}
               mapKey={`edit-${editKey}`}
               searchKey={editKey}
               disabled={pending}
