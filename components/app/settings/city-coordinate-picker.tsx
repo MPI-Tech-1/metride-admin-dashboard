@@ -69,16 +69,20 @@ export function CityCoordinatesMap({
   onPick,
   disabled,
   mapKey,
+  mapId: mapIdProp,
 }: {
   latitude: string
   longitude: string
   onPick: (lat: number, lng: number) => void
   disabled?: boolean
   mapKey: string | number
+  /** Vector map id for AdvancedMarker; falls back to NEXT_PUBLIC if omitted. */
+  mapId?: string
 }) {
   const parsed = parseLatLng(latitude, longitude)
   const center = parsed ?? DEFAULT_CENTER
-  const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID ?? ""
+  const mapId =
+    mapIdProp ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID ?? ""
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-border/80 bg-muted/30 shadow-sm ring-1 ring-black/5 dark:ring-white/10">

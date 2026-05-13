@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react"
 import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps"
 import { io, Socket } from "socket.io-client"
 import { IconCar, IconWifi, IconWifiOff } from "@tabler/icons-react"
+
+import type { GoogleMapsClientConfig } from "@/lib/google-maps-client"
+import { isGoogleMapsClientReady } from "@/lib/google-maps-client"
 import {
   Select,
   SelectContent,
@@ -108,7 +111,11 @@ function DriverPolylines({
   return null
 }
 
-export function LiveTrackingMap() {
+export function LiveTrackingMap({
+  googleMaps,
+}: {
+  googleMaps: GoogleMapsClientConfig
+}) {
   const [connected, setConnected] = useState(false)
   const [drivers, setDrivers] = useState<DriverMap>({})
   const [selectedCity, setSelectedCity] = useState<City>(CITIES[0])
@@ -161,16 +168,17 @@ export function LiveTrackingMap() {
   }, [])
 
   const driverEntries = Object.entries(drivers)
+  const showMapsConfigHint = !isGoogleMapsClientReady(googleMaps)
 
   return (
     <div className="relative h-full w-full">
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
+      <APIProvider apiKey={googleMaps.apiKey}>
         <Map
           style={{ width: "100%", height: "100%" }}
           defaultCenter={selectedCity}
           defaultZoom={13}
           gestureHandling="greedy"
-          mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID ?? ""}
+          mapId={googleMaps.mapId}
         >
           <MapController center={selectedCity} />
           <DriverPolylines
@@ -201,6 +209,17 @@ export function LiveTrackingMap() {
           ))}
         </Map>
       </APIProvider>
+
+      {showMapsConfigHint && (
+        <div className="pointer-events-auto absolute bottom-4 left-1/2 z-20 w-[min(100%-1.5rem,28rem)] -translate-x-1/2 rounded-lg border border-amber-200/90 bg-amber-50/95 px-3 py-2 text-xs text-amber-950 shadow-lg backdrop-blur-sm dark:border-amber-800/80 dark:bg-amber-950/90 dark:text-amber-50">
+          <p className="font-medium leading-snug">Maps API key or Map ID missing</p>
+          <p className="mt-1 leading-relaxed opacity-90">
+            Set <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">GOOGLE_MAPS_API_KEY</code> +{" "}
+            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">GOOGLE_MAPS_MAP_ID</code> on the server, or{" "}
+            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">NEXT_PUBLIC_GOOGLE_MAPS_*</code> at build time.
+          </p>
+        </div>
+      )}
 
       {/* Connection status — top left */}
       <div className="absolute left-3 top-3 flex flex-col gap-2">

@@ -33,6 +33,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  isGoogleMapsClientReady,
+  type GoogleMapsClientConfig,
+} from "@/lib/google-maps-client"
 
 function CityFormFields({
   name,
@@ -44,6 +48,7 @@ function CityFormFields({
   searchInstanceKey,
   disabled,
   showPlacesSearch,
+  mapId,
 }: {
   name: string
   latitude: string
@@ -54,6 +59,7 @@ function CityFormFields({
   searchInstanceKey: number | string
   disabled?: boolean
   showPlacesSearch: boolean
+  mapId: string
 }) {
   function applyCoordinatesFromSearch(place: PlaceSelection) {
     onLatitudeChange(place.latitude)
@@ -119,6 +125,7 @@ function CityFormFields({
               longitude={longitude}
               disabled={disabled}
               onPick={applyCoordinatesFromMap}
+              mapId={mapId}
             />
           </Field>
         </div>
@@ -168,8 +175,14 @@ function CityFormFields({
   )
 }
 
-function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""
+function CitiesTableInner({
+  cities,
+  googleMaps,
+}: {
+  cities: CityDTO[]
+  googleMaps: GoogleMapsClientConfig
+}) {
+  const mapsReady = isGoogleMapsClientReady(googleMaps)
 
   const [createOpen, setCreateOpen] = useState(false)
   const [editCity, setEditCity] = useState<CityDTO | null>(null)
@@ -244,8 +257,6 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
     })
   }
 
-  const mapsReady = Boolean(apiKey)
-
   return (
     <>
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -262,9 +273,12 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
         <div className="rounded-xl border border-amber-200/80 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/35 dark:text-amber-50">
           <p className="font-medium">Maps search disabled</p>
           <p className="mt-1 text-xs leading-relaxed opacity-90">
-            Add <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code>,{" "}
-            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_ID</code>, and Places API.
-            Coordinates can still be entered manually.
+            Set <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">GOOGLE_MAPS_API_KEY</code> and{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">GOOGLE_MAPS_MAP_ID</code> on the server, or{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> and{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">NEXT_PUBLIC_GOOGLE_MAPS_ID</code> before{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 font-mono text-[11px] dark:bg-amber-900/50">next build</code>. Enable Places API. Coordinates
+            can still be entered manually.
           </p>
         </div>
       )}
@@ -330,7 +344,10 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
           </DialogHeader>
           <div className="py-2">
             {mapsReady ? (
-              <APIProvider apiKey={apiKey} libraries={["places", "marker"]}>
+              <APIProvider
+                apiKey={googleMaps.apiKey}
+                libraries={["places", "marker"]}
+              >
                 <CityFormFields
                   name={name}
                   latitude={latitude}
@@ -341,6 +358,7 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
                   searchInstanceKey={searchKey}
                   disabled={pending}
                   showPlacesSearch
+                  mapId={googleMaps.mapId}
                 />
               </APIProvider>
             ) : (
@@ -354,6 +372,7 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
                 searchInstanceKey={searchKey}
                 disabled={pending}
                 showPlacesSearch={false}
+                mapId=""
               />
             )}
           </div>
@@ -394,7 +413,10 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
           </DialogHeader>
           <div className="py-2">
           {mapsReady ? (
-            <APIProvider apiKey={apiKey} libraries={["places", "marker"]}>
+            <APIProvider
+              apiKey={googleMaps.apiKey}
+              libraries={["places", "marker"]}
+            >
               <CityFormFields
                 name={editName}
                 latitude={editLatitude}
@@ -405,6 +427,7 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
                 searchInstanceKey={editSearchKey}
                 disabled={pending}
                 showPlacesSearch
+                mapId={googleMaps.mapId}
               />
             </APIProvider>
           ) : (
@@ -418,6 +441,7 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
               searchInstanceKey={editSearchKey}
               disabled={pending}
               showPlacesSearch={false}
+              mapId=""
             />
           )}
           </div>
@@ -440,6 +464,12 @@ function CitiesTableInner({ cities }: { cities: CityDTO[] }) {
   )
 }
 
-export function CitiesSection({ cities }: { cities: CityDTO[] }) {
-  return <CitiesTableInner cities={cities} />
+export function CitiesSection({
+  cities,
+  googleMaps,
+}: {
+  cities: CityDTO[]
+  googleMaps: GoogleMapsClientConfig
+}) {
+  return <CitiesTableInner cities={cities} googleMaps={googleMaps} />
 }
