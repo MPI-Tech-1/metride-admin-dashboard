@@ -13,7 +13,7 @@ export default async function rejectDriver({
 }): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post(
-      `/driver-management/drivers/${driverId}/reject`,
+      `/admins/driver-management/drivers/${driverId}/reject`,
       { reason }
     )
 

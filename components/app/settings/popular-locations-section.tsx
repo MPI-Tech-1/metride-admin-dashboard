@@ -297,11 +297,13 @@ export function PopularLocationsSection({
     startTransition(async () => {
       const result = await updatePopularLocation({
         identifier: editLoc.identifier,
-        cityIdentifier: editCityIdentifier,
-        name: editName.trim(),
-        gpsCoordinates: editGps.trim(),
-        typeOfLocation: editType,
-        isActive: editIsActive,
+        body: {
+          cityIdentifier: editCityIdentifier,
+          name: editName.trim(),
+          gpsCoordinates: editGps.trim(),
+          typeOfLocation: editType,
+          isActive: editIsActive,
+        },
       })
       if (result.success) {
         toast.success(result.message)

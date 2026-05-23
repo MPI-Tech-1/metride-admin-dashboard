@@ -76,7 +76,7 @@ export default async function listBookings({
   paginationMeta: PaginationMeta
 }> {
   const { data } = await httpClientInstance.get<ListBookingsResponse>(
-    `/bookings`,
+    `/admins/bookings`,
     {
       params: {
         page,

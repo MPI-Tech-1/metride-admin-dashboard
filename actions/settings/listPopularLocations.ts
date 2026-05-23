@@ -31,7 +31,7 @@ export default async function listPopularLocations(): Promise<
   PopularLocationDTO[]
 > {
   const { data } = await httpClientInstance.get<ListPopularLocationsResponse>(
-    `/settings/booking/popular-locations`
+    `/admins/settings/booking/popular-locations`
   )
   return data.results.popularLocationPayload
 }

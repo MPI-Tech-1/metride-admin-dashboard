@@ -46,7 +46,7 @@ interface GetDashboardOverviewResponse {
 
 export default async function getDashboardOverview(): Promise<DashboardOverview> {
   const { data } = await httpClientInstance.get<GetDashboardOverviewResponse>(
-    `/dashboard/overview`
+    `/admins/dashboard/overview`
   )
   return data.results
 }

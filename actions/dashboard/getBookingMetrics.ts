@@ -18,7 +18,7 @@ interface GetBookingMetricsResponse {
 export default async function getBookingMetrics(): Promise<BookingMetrics> {
   const { data } =
     await httpClientInstance.get<GetBookingMetricsResponse>(
-      `/dashboard/booking-metrics`
+      `/admins/dashboard/booking-metrics`
     )
   return data.results
 }

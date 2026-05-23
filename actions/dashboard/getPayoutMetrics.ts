@@ -19,7 +19,7 @@ interface GetPayoutMetricsResponse {
 export default async function getPayoutMetrics(): Promise<PayoutMetrics> {
   const { data } =
     await httpClientInstance.get<GetPayoutMetricsResponse>(
-      `/dashboard/payout-metrics`
+      `/admins/dashboard/payout-metrics`
     )
   return data.results
 }

@@ -2,6 +2,12 @@
 
 import httpClientInstance from "@/actions/http-client"
 
+export interface DriverSettingsDTO {
+  identifier: string
+  /** Decimal commission as a string (e.g. "70.00"). */
+  commissionPercentage: string | null
+}
+
 export interface DriverDetailDTO {
   identifier: string
   firstName: string
@@ -31,6 +37,7 @@ export interface DriverDetailDTO {
     hasProvidedRequiredDocuments: boolean
     hasProvidedBankAccount: boolean
   }
+  driverSettings: DriverSettingsDTO | null
   driverBankAccount: {
     identifier: string
     bank: {
@@ -48,6 +55,7 @@ export interface DriverDetailDTO {
     driverLicenceUrl: string | null
     vehiclePaperUrl: string | null
     vehiclePhotoUrl: string | null
+    referencePhotoUrl: string | null
     createdAt: string
     updatedAt: string
   }
@@ -76,7 +84,7 @@ export default async function getDriver(
 ): Promise<DriverDetailDTO> {
   try {
     const { data } = await httpClientInstance.get<GetDriverResponse>(
-      `/driver-management/drivers/${driverIdentifier}`
+      `/admins/driver-management/drivers/${driverIdentifier}`
     )
     return data.results
   } catch (getDriverError) {

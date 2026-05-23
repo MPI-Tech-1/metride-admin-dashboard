@@ -43,7 +43,7 @@ export default async function listDriverTransactions({
   paginationMeta: PaginationMeta
 }> {
   const { data } = await httpClientInstance.get<ListDriverTransactionsResponse>(
-    `/wallet-management/driver/transactions`,
+    `/admins/wallet-management/driver/transactions`,
     {
       params: {
         page,

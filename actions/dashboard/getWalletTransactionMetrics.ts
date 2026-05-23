@@ -19,7 +19,7 @@ interface GetWalletTransactionMetricsResponse {
 export default async function getWalletTransactionMetrics(): Promise<WalletTransactionMetrics> {
   const { data } =
     await httpClientInstance.get<GetWalletTransactionMetricsResponse>(
-      `/dashboard/wallet-transaction-metrics`
+      `/admins/dashboard/wallet-transaction-metrics`
     )
   return data.results
 }

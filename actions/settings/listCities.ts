@@ -20,7 +20,7 @@ interface ListCitiesResponse {
 
 export default async function listCities(): Promise<CityDTO[]> {
   const { data } = await httpClientInstance.get<ListCitiesResponse>(
-    `/settings/cities`
+    `/admins/settings/cities`
   )
   return data.results.cities
 }
