@@ -192,7 +192,7 @@ function RideTypeFormFields({
           />
           <FieldLabel
             htmlFor="rt-active"
-            className="cursor-pointer text-sm font-normal leading-snug"
+            className="cursor-pointer text-sm leading-snug font-normal"
           >
             Active
           </FieldLabel>
@@ -371,13 +371,18 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
           </Link>
           .
         </p>
-        <Button type="button" size="sm" className="shrink-0 gap-1.5" onClick={openCreate}>
+        <Button
+          type="button"
+          size="sm"
+          className="shrink-0 gap-1.5"
+          onClick={openCreate}
+        >
           <Plus className="size-4" />
           Add ride type
         </Button>
       </div>
 
-      <div className="overflow-x-auto overflow-hidden rounded-xl border border-border/80 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
+      <div className="overflow-hidden overflow-x-auto rounded-xl border border-border/80 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
         <Table className="min-w-[640px]">
           <TableHeader className="bg-muted/60">
             <TableRow className="hover:bg-transparent">
@@ -385,20 +390,24 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               <TableHead className="hidden min-w-[180px] font-medium md:table-cell">
                 Description
               </TableHead>
-              <TableHead className="w-[64px] text-right font-medium">Seats</TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="w-[64px] text-right font-medium">
+                Seats
+              </TableHead>
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 / km
               </TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 Base
               </TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 Min
               </TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 Status
               </TableHead>
-              <TableHead className="w-[64px] text-right font-medium"> </TableHead>
+              <TableHead className="w-[64px] text-right font-medium">
+                {" "}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -470,8 +479,8 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               Add ride type
             </DialogTitle>
             <DialogDescription className="text-sm leading-relaxed">
-              Define seating and prices. Money fields are naira; the API receives
-              kobo.
+              Define seating and prices. Money fields are naira; the API
+              receives kobo.
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">

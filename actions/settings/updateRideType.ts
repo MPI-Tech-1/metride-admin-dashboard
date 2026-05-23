@@ -78,8 +78,7 @@ export default async function updateRideType(
     if (axios.isAxiosError(error) && error.response) {
       return {
         success: false,
-        message:
-          error.response.data?.message ?? "Could not update ride type.",
+        message: error.response.data?.message ?? "Could not update ride type.",
       }
     }
     return { success: false, message: "Could not update ride type." }
