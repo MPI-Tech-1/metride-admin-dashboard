@@ -68,7 +68,7 @@ export default async function getBooking(
   identifier: string
 ): Promise<BookingDetailDTO> {
   const { data } = await httpClientInstance.get<GetBookingResponse>(
-    `/bookings/${identifier}`
+    `/admins/bookings/${identifier}`
   )
   return data.results
 }

@@ -18,7 +18,7 @@ interface ListVehicleMakesResponse {
 
 export default async function listVehicleMakes(): Promise<VehicleMakeDTO[]> {
   const { data } = await httpClientInstance.get<ListVehicleMakesResponse>(
-    `/settings/vehicles/vehicle-makes`
+    `/admins/settings/vehicles/vehicle-makes`
   )
   return data.results.vehicleMakes
 }

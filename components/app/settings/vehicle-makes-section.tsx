@@ -72,7 +72,7 @@ export function VehicleMakesSection({ makes }: { makes: VehicleMakeDTO[] }) {
     startTransition(async () => {
       const result = await updateVehicleMake({
         identifier: editMake.identifier,
-        name,
+        body: { name },
       })
       if (result.success) {
         toast.success(result.message)

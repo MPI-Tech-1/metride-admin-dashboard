@@ -33,7 +33,7 @@ export default async function listCustomers({
   paginationMeta: PaginationMeta
 }> {
   const { data } = await httpClientInstance.get<ListCustomersResponse>(
-    `/customer-management/customers`,
+    `/admins/customer-management/customers`,
     { params: { page, limit } }
   )
   return {

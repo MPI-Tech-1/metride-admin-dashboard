@@ -3,12 +3,17 @@ export const dynamic = "force-dynamic"
 import { format } from "date-fns"
 import { getServerSession } from "next-auth/next"
 
-import listBookings from "@/actions/bookings/listBookings"
-import getDashboardOverview from "@/actions/dashboard/getDashboardOverview"
+import listBookings, {
+  type ListBookingDTO,
+} from "@/actions/bookings/listBookings"
+import getDashboardOverview, {
+  type DashboardOverview,
+} from "@/actions/dashboard/getDashboardOverview"
 import { authOptions } from "@/lib/auth"
 import AppLayout from "@/components/layouts/app-layout"
 import { DashboardOverviewPanels } from "@/components/app/dashboard/dashboard-overview"
 import { DashboardRecentBookings } from "@/components/app/dashboard/dashboard-recent-bookings"
+import { isPathAllowedForRole, normalizeRole } from "@/lib/permissions"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 
 function getGreeting(name: string) {
@@ -24,16 +29,34 @@ export default async function Page() {
   const session = await getServerSession(authOptions)
   const adminName = session?.user?.name ?? "Admin"
   const { timeOfDay, name } = getGreeting(adminName)
+  const role = normalizeRole(session?.user?.role)
+  const canSeeBookings = role ? isPathAllowedForRole("/booking", role) : false
 
-  const [overview, { bookings }] = await Promise.all([
-    getDashboardOverview(),
-    listBookings({ limit: 8 }),
+  // Each fetch is wrapped so a 403 from one doesn't crash the dashboard for
+  // roles that legitimately can't see every section.
+  const overviewPromise: Promise<DashboardOverview | null> =
+    getDashboardOverview().catch((overviewError) => {
+      console.error("getDashboardOverview failed", overviewError)
+      return null
+    })
+
+  const bookingsPromise: Promise<ListBookingDTO[]> = canSeeBookings
+    ? listBookings({ limit: 8 })
+        .then((result) => result.bookings)
+        .catch((bookingsError) => {
+          console.error("listBookings failed", bookingsError)
+          return []
+        })
+    : Promise.resolve([])
+
+  const [overview, bookings] = await Promise.all([
+    overviewPromise,
+    bookingsPromise,
   ])
 
-  const generatedLabel = format(
-    new Date(overview.generatedAt),
-    "MMM d, yyyy · HH:mm"
-  )
+  const generatedLabel = overview
+    ? format(new Date(overview.generatedAt), "MMM d, yyyy · HH:mm")
+    : null
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -50,18 +73,35 @@ export default async function Page() {
               Booking, driver, and customer metrics for your network. Figures
               refresh from the live dashboard service.
             </p>
-            <p className="text-xs text-muted-foreground">
-              Data as of{" "}
-              <time dateTime={overview.generatedAt} className="font-medium text-foreground">
-                {generatedLabel}
-              </time>
-              <span className="text-muted-foreground"> (UTC)</span>
-            </p>
+            {overview && generatedLabel ? (
+              <p className="text-xs text-muted-foreground">
+                Data as of{" "}
+                <time
+                  dateTime={overview.generatedAt}
+                  className="font-medium text-foreground"
+                >
+                  {generatedLabel}
+                </time>
+                <span className="text-muted-foreground"> (UTC)</span>
+              </p>
+            ) : null}
           </header>
 
-          <DashboardOverviewPanels overview={overview} />
+          {overview ? (
+            <DashboardOverviewPanels overview={overview} />
+          ) : (
+            <div className="rounded-xl border border-dashed border-border/80 bg-muted/30 px-4 py-8 text-center">
+              <p className="text-sm font-medium">Overview unavailable</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                We couldn&apos;t load the metrics for this account. Try
+                refreshing, or contact an admin if this keeps happening.
+              </p>
+            </div>
+          )}
 
-          <DashboardRecentBookings bookings={bookings} />
+          {canSeeBookings ? (
+            <DashboardRecentBookings bookings={bookings} />
+          ) : null}
         </div>
       </div>
     </AppLayout>

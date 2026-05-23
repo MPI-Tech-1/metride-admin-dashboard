@@ -16,18 +16,20 @@ interface UpdatePopularLocationResponse {
   message: string
 }
 
-export default async function updatePopularLocation({
-  identifier,
-  ...payload
-}: UpdatePopularLocationBody & { identifier: string }): Promise<{
-  success: boolean
-  message: string
-}> {
+interface UpdatePopularLocationArgs {
+  identifier: string
+  body: UpdatePopularLocationBody
+}
+
+export default async function updatePopularLocation(
+  args: UpdatePopularLocationArgs
+): Promise<{ success: boolean; message: string }> {
+  const { identifier, body } = args
   try {
     const { data } =
       await httpClientInstance.patch<UpdatePopularLocationResponse>(
-        `/settings/booking/popular-locations/${identifier}`,
-        payload
+        `/admins/settings/booking/popular-locations/${identifier}`,
+        body
       )
     revalidatePath("/settings/popular-locations")
     return { success: true, message: data.message }

@@ -14,7 +14,7 @@ export default async function createVehicleModel(payload: {
 }): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post<CreateVehicleModelResponse>(
-      `/settings/vehicles/vehicle-models`,
+      `/admins/settings/vehicles/vehicle-models`,
       payload
     )
     revalidatePath("/settings/vehicle-models")

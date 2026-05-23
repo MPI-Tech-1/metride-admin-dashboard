@@ -8,18 +8,24 @@ interface UpdateVehicleModelResponse {
   message: string
 }
 
-export default async function updateVehicleModel({
-  identifier,
-  ...payload
-}: {
-  identifier: string
+export interface UpdateVehicleModelBody {
   name: string
   vehicleMakeIdentifier: string
-}): Promise<{ success: boolean; message: string }> {
+}
+
+interface UpdateVehicleModelArgs {
+  identifier: string
+  body: UpdateVehicleModelBody
+}
+
+export default async function updateVehicleModel(
+  args: UpdateVehicleModelArgs
+): Promise<{ success: boolean; message: string }> {
+  const { identifier, body } = args
   try {
     const { data } = await httpClientInstance.patch<UpdateVehicleModelResponse>(
-      `/settings/vehicles/vehicle-models/${identifier}`,
-      payload
+      `/admins/settings/vehicles/vehicle-models/${identifier}`,
+      body
     )
     revalidatePath("/settings/vehicle-models")
     return { success: true, message: data.message }

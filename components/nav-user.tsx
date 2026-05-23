@@ -1,12 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import {
   ChevronsUpDown,
+  KeyRound,
   LogOut,
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 
+import { ResetPasswordDialog } from "@/components/app/account/reset-password-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +25,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { ROLE_LABELS, type Role } from "@/lib/permissions"
 
 function getInitials(name: string) {
   return name
@@ -38,10 +43,13 @@ export function NavUser({
     name: string
     email: string
     avatar?: string
+    role: Role | null
   }
 }) {
   const { isMobile } = useSidebar()
   const initials = getInitials(user.name)
+  const roleLabel = user.role ? ROLE_LABELS[user.role] : null
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
 
   return (
     <SidebarMenu>
@@ -75,12 +83,32 @@ export function NavUser({
                   <AvatarImage src={user.avatar ?? ""} alt={user.name} />
                   <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid min-w-0 flex-1 gap-0.5 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </span>
+                  {roleLabel && (
+                    <Badge
+                      variant="secondary"
+                      className="mt-0.5 w-fit text-[10px] font-medium uppercase tracking-wide"
+                    >
+                      {roleLabel}
+                    </Badge>
+                  )}
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault()
+                setResetPasswordOpen(true)
+              }}
+            >
+              <KeyRound />
+              Reset password
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
               <LogOut />
@@ -89,6 +117,12 @@ export function NavUser({
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+
+      <ResetPasswordDialog
+        open={resetPasswordOpen}
+        onOpenChange={setResetPasswordOpen}
+        email={user.email}
+      />
     </SidebarMenu>
   )
 }

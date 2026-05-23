@@ -21,7 +21,7 @@ export default async function createPopularLocation(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post<CreatePopularLocationResponse>(
-      `/settings/booking/popular-locations`,
+      `/admins/settings/booking/popular-locations`,
       payload
     )
     revalidatePath("/settings/popular-locations")

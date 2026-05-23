@@ -13,7 +13,7 @@ export default async function createVehicleMake(payload: {
 }): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post<CreateVehicleMakeResponse>(
-      `/settings/vehicles/vehicle-makes`,
+      `/admins/settings/vehicles/vehicle-makes`,
       payload
     )
     revalidatePath("/settings/vehicle-makes")

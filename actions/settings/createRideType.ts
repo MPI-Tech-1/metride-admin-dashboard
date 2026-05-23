@@ -22,7 +22,7 @@ export default async function createRideType(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post<CreateRideTypeResponse>(
-      `/settings/booking/ride-types`,
+      `/admins/settings/booking/ride-types`,
       payload
     )
     revalidatePath("/settings/ride-types")

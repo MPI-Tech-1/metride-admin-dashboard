@@ -24,7 +24,7 @@ interface ListVehicleModelsResponse {
 
 export default async function listVehicleModels(): Promise<VehicleModelDTO[]> {
   const { data } = await httpClientInstance.get<ListVehicleModelsResponse>(
-    `/settings/vehicles/vehicle-models`
+    `/admins/settings/vehicles/vehicle-models`
   )
   return data.results.vehicleModels
 }

@@ -9,7 +9,7 @@ export default async function rejectDriverPayout(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.patch(
-      `/wallet-management/driver/transactions/${identifier}/reject`
+      `/admins/wallet-management/driver/transactions/${identifier}/reject`
     )
     revalidatePath("/wallet/driver")
     return { success: true, message: data.message }

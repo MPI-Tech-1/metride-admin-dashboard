@@ -34,7 +34,7 @@ export default async function listDrivers({
 } = {}): Promise<{ drivers: ListDriverDTO[]; paginationMeta: PaginationMeta }> {
   try {
     const { data } = await httpClientInstance.get<ListDriversResponse>(
-      `/driver-management/drivers`,
+      `/admins/driver-management/drivers`,
       { params: { page, limit, ...(searchQuery ? { searchQuery } : {}) } }
     )
     return {

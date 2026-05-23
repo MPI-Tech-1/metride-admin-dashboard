@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
@@ -57,6 +58,9 @@ function RideTypeFormFields({
   onBasePriceChange,
   minimumPriceNaira,
   onMinimumPriceChange,
+  isActive,
+  onIsActiveChange,
+  showActiveToggle,
   disabled,
 }: {
   name: string
@@ -71,6 +75,9 @@ function RideTypeFormFields({
   onBasePriceChange: (v: string) => void
   minimumPriceNaira: string
   onMinimumPriceChange: (v: string) => void
+  isActive?: boolean
+  onIsActiveChange?: (v: boolean) => void
+  showActiveToggle?: boolean
   disabled?: boolean
 }) {
   return (
@@ -174,6 +181,23 @@ function RideTypeFormFields({
           />
         </Field>
       </div>
+
+      {showActiveToggle && typeof isActive === "boolean" && onIsActiveChange ? (
+        <div className="flex min-h-9 items-center gap-2.5 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
+          <Checkbox
+            id="rt-active"
+            checked={isActive}
+            onCheckedChange={(checked) => onIsActiveChange(checked === true)}
+            disabled={disabled}
+          />
+          <FieldLabel
+            htmlFor="rt-active"
+            className="cursor-pointer text-sm leading-snug font-normal"
+          >
+            Active
+          </FieldLabel>
+        </div>
+      ) : null}
     </FieldGroup>
   )
 }
@@ -248,6 +272,7 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
   const [editPpk, setEditPpk] = useState("")
   const [editBase, setEditBase] = useState("")
   const [editMin, setEditMin] = useState("")
+  const [editIsActive, setEditIsActive] = useState(true)
 
   const [pending, startTransition] = useTransition()
 
@@ -269,6 +294,7 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
     setEditPpk(koboToNairaField(rt.pricePerKilometer))
     setEditBase(koboToNairaField(rt.basePrice))
     setEditMin(koboToNairaField(rt.minimumPrice))
+    setEditIsActive(rt.isActive)
   }
 
   function submitCreate() {
@@ -310,9 +336,10 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
       return
     }
     startTransition(async () => {
-      const result = await updateRideType({
-        identifier: editRt.identifier,
+      const result = await updateRideType(editRt.identifier, {
         ...parsed.payload,
+        identifier: editRt.identifier,
+        isActive: editIsActive,
       })
       if (result.success) {
         toast.success(result.message)
@@ -344,13 +371,18 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
           </Link>
           .
         </p>
-        <Button type="button" size="sm" className="shrink-0 gap-1.5" onClick={openCreate}>
+        <Button
+          type="button"
+          size="sm"
+          className="shrink-0 gap-1.5"
+          onClick={openCreate}
+        >
           <Plus className="size-4" />
           Add ride type
         </Button>
       </div>
 
-      <div className="overflow-x-auto overflow-hidden rounded-xl border border-border/80 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
+      <div className="overflow-hidden overflow-x-auto rounded-xl border border-border/80 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
         <Table className="min-w-[640px]">
           <TableHeader className="bg-muted/60">
             <TableRow className="hover:bg-transparent">
@@ -358,17 +390,24 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               <TableHead className="hidden min-w-[180px] font-medium md:table-cell">
                 Description
               </TableHead>
-              <TableHead className="w-[64px] text-right font-medium">Seats</TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="w-[64px] text-right font-medium">
+                Seats
+              </TableHead>
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 / km
               </TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 Base
               </TableHead>
-              <TableHead className="whitespace-nowrap text-right font-medium">
+              <TableHead className="text-right font-medium whitespace-nowrap">
                 Min
               </TableHead>
-              <TableHead className="w-[64px] text-right font-medium"> </TableHead>
+              <TableHead className="text-right font-medium whitespace-nowrap">
+                Status
+              </TableHead>
+              <TableHead className="w-[64px] text-right font-medium">
+                {" "}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -404,6 +443,17 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
                     {formatNaira(rt.minimumPrice)}
                   </TableCell>
                   <TableCell className="text-right">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                        rt.isActive
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {rt.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
                     <Button
                       type="button"
                       variant="ghost"
@@ -429,8 +479,8 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               Add ride type
             </DialogTitle>
             <DialogDescription className="text-sm leading-relaxed">
-              Define seating and prices. Money fields are naira; the API receives
-              kobo.
+              Define seating and prices. Money fields are naira; the API
+              receives kobo.
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">
@@ -490,6 +540,9 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               onBasePriceChange={setEditBase}
               minimumPriceNaira={editMin}
               onMinimumPriceChange={setEditMin}
+              isActive={editIsActive}
+              onIsActiveChange={setEditIsActive}
+              showActiveToggle
               disabled={pending}
             />
           </div>

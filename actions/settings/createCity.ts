@@ -19,7 +19,7 @@ export default async function createCity(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post<CreateCityResponse>(
-      `/settings/cities`,
+      `/admins/settings/cities`,
       payload
     )
     revalidatePath("/settings/cities")
