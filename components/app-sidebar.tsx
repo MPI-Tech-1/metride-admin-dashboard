@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import {
   Users,
   CarFront,
@@ -7,12 +8,14 @@ import {
   LayoutDashboard,
   Wallet,
   RadioTower,
+  Activity,
   Settings,
+  ShieldCheck,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 
 import { MetRideLogoMark } from "@/components/brand/met-ride-logos"
-import { NavMain, type NavSection } from "@/components/nav-main"
+import { NavMain, type NavSection, type NavItem } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
@@ -25,9 +28,23 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { isPathAllowedForRole, normalizeRole, type Role } from "@/lib/permissions"
 import Link from "next/link"
 
-const navSections: NavSection[] = [
+type RoleAwareNavItem = NavItem & {
+  items?: (NavItem["items"] extends infer U
+    ? U extends Array<infer I>
+      ? I
+      : never
+    : never)[]
+}
+
+type RoleAwareNavSection = {
+  label: string
+  items: RoleAwareNavItem[]
+}
+
+const navSections: RoleAwareNavSection[] = [
   {
     label: "Overview",
     items: [
@@ -43,6 +60,7 @@ const navSections: NavSection[] = [
     items: [
       { title: "Customers", url: "/customers", icon: Users },
       { title: "Drivers", url: "/driver", icon: CarFront },
+      { title: "Active Drivers", url: "/drivers/active", icon: Activity },
       { title: "Bookings", url: "/booking", icon: CalendarCheck },
       { title: "Live Tracking", url: "/tracking", icon: RadioTower },
     ],
@@ -78,7 +96,48 @@ const navSections: NavSection[] = [
       },
     ],
   },
+  {
+    label: "Administration",
+    items: [
+      {
+        title: "User Management",
+        url: "/user-management",
+        icon: ShieldCheck,
+      },
+    ],
+  },
 ]
+
+function filterSectionsForRole(
+  sections: RoleAwareNavSection[],
+  role: Role
+): NavSection[] {
+  const filtered: NavSection[] = []
+
+  for (const section of sections) {
+    const items: NavItem[] = []
+
+    for (const item of section.items) {
+      if (item.items?.length) {
+        // Parent with children: keep children the role can reach.
+        const allowedChildren = item.items.filter((child) =>
+          isPathAllowedForRole(child.url, role)
+        )
+        if (allowedChildren.length > 0) {
+          items.push({ ...item, items: allowedChildren })
+        }
+      } else if (isPathAllowedForRole(item.url, role)) {
+        items.push(item)
+      }
+    }
+
+    if (items.length > 0) {
+      filtered.push({ label: section.label, items })
+    }
+  }
+
+  return filtered
+}
 
 function SidebarBrand() {
   const { state, isMobile } = useSidebar()
@@ -104,6 +163,12 @@ function SidebarBrand() {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
+  const role = normalizeRole(session?.user?.role)
+
+  const sections = useMemo(() => {
+    if (!role) return []
+    return filterSectionsForRole(navSections, role)
+  }, [role])
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -113,13 +178,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="gap-0">
-        <NavMain sections={navSections} />
+        <NavMain sections={sections} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser
           user={{
             name: session?.user?.name ?? "",
             email: session?.user?.email ?? "",
+            role: role,
           }}
         />
       </SidebarFooter>

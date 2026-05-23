@@ -244,9 +244,11 @@ function CitiesTableInner({
     startTransition(async () => {
       const result = await updateCity({
         identifier: editCity.identifier,
-        name: editName.trim(),
-        latitude: editLatitude.trim(),
-        longitude: editLongitude.trim(),
+        body: {
+          name: editName.trim(),
+          latitude: editLatitude.trim(),
+          longitude: editLongitude.trim(),
+        },
       })
       if (result.success) {
         toast.success(result.message)

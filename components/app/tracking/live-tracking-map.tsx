@@ -1,7 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps"
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  useMap,
+} from "@vis.gl/react-google-maps"
 import { io, Socket } from "socket.io-client"
 import { IconCar, IconWifi, IconWifiOff } from "@tabler/icons-react"
 
@@ -34,7 +39,7 @@ const CITIES: City[] = [
   { name: "Benin City", lat: 6.335, lng: 5.6038 },
 ]
 
-interface DriverLocation {
+interface BookingDriver {
   bookingIdentifier: string
   driverFullName: string
   customerFullName: string
@@ -43,13 +48,13 @@ interface DriverLocation {
   path: { lat: number; lng: number }[]
 }
 
-type DriverMap = Record<string, DriverLocation>
+type BookingDriverMap = Record<string, BookingDriver>
 
 function parseCoords(str: string): { lat: number; lng: number } | null {
   const [latStr, lngStr] = str.split(",")
   const lat = Number(latStr)
   const lng = Number(lngStr)
-  if (isNaN(lat) || isNaN(lng)) return null
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
   return { lat, lng }
 }
 
@@ -117,7 +122,7 @@ export function LiveTrackingMap({
   googleMaps: GoogleMapsClientConfig
 }) {
   const [connected, setConnected] = useState(false)
-  const [drivers, setDrivers] = useState<DriverMap>({})
+  const [bookingDrivers, setBookingDrivers] = useState<BookingDriverMap>({})
   const [selectedCity, setSelectedCity] = useState<City>(CITIES[0])
   const socketRef = useRef<Socket | null>(null)
 
@@ -138,7 +143,7 @@ export function LiveTrackingMap({
       const coords = parseCoords(data.gpsCoordinates)
       if (!coords) return
 
-      setDrivers((prev) => {
+      setBookingDrivers((prev) => {
         const previousDriver = prev[data.driver.identifier]
         const previousPath = previousDriver?.path ?? []
         const lastPoint = previousPath[previousPath.length - 1]
@@ -167,7 +172,7 @@ export function LiveTrackingMap({
     }
   }, [])
 
-  const driverEntries = Object.entries(drivers)
+  const driverEntries = Object.entries(bookingDrivers)
   const showMapsConfigHint = !isGoogleMapsClientReady(googleMaps)
 
   return (
@@ -212,11 +217,23 @@ export function LiveTrackingMap({
 
       {showMapsConfigHint && (
         <div className="pointer-events-auto absolute bottom-4 left-1/2 z-20 w-[min(100%-1.5rem,28rem)] -translate-x-1/2 rounded-lg border border-amber-200/90 bg-amber-50/95 px-3 py-2 text-xs text-amber-950 shadow-lg backdrop-blur-sm dark:border-amber-800/80 dark:bg-amber-950/90 dark:text-amber-50">
-          <p className="font-medium leading-snug">Maps API key or Map ID missing</p>
+          <p className="font-medium leading-snug">
+            Maps API key or Map ID missing
+          </p>
           <p className="mt-1 leading-relaxed opacity-90">
-            Set <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">GOOGLE_MAPS_API_KEY</code> +{" "}
-            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">GOOGLE_MAPS_MAP_ID</code> on the server, or{" "}
-            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">NEXT_PUBLIC_GOOGLE_MAPS_*</code> at build time.
+            Set{" "}
+            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">
+              GOOGLE_MAPS_API_KEY
+            </code>{" "}
+            +{" "}
+            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">
+              GOOGLE_MAPS_MAP_ID
+            </code>{" "}
+            on the server, or{" "}
+            <code className="rounded bg-amber-100/90 px-1 py-px font-mono text-[10px] dark:bg-amber-900/70">
+              NEXT_PUBLIC_GOOGLE_MAPS_*
+            </code>{" "}
+            at build time.
           </p>
         </div>
       )}
@@ -234,8 +251,8 @@ export function LiveTrackingMap({
 
         {driverEntries.length > 0 && (
           <div className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow backdrop-blur-sm">
-            {driverEntries.length} active driver
-            {driverEntries.length !== 1 ? "s" : ""}
+            {driverEntries.length} driver
+            {driverEntries.length !== 1 ? "s" : ""} on a trip
           </div>
         )}
       </div>
@@ -267,9 +284,9 @@ export function LiveTrackingMap({
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="rounded-xl bg-background/90 px-6 py-4 text-center shadow-lg backdrop-blur-sm">
             <IconCar size={32} className="mx-auto mb-2 text-muted-foreground" />
-            <p className="text-sm font-medium">No active drivers</p>
+            <p className="text-sm font-medium">No drivers on a trip</p>
             <p className="text-xs text-muted-foreground">
-              Waiting for live location updates…
+              Waiting for live booking pushes…
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import getDriver from "@/actions/drivers/getDriver"
+import listDriverVehiclePhotos from "@/actions/vehicles/listDriverVehiclePhotos"
 import { Badge } from "@/components/ui/badge"
 import {
   IconCircleX,
@@ -18,6 +19,9 @@ import { format } from "date-fns"
 import DriverLayout from "@/components/layouts/driver-layout"
 import { Pencil } from "lucide-react"
 import DriverActions from "@/components/app/driver/driver-actions"
+import { DriverSettingsCard } from "@/components/app/driver/driver-settings-card"
+import { ReferenceFormCard } from "@/components/app/driver/reference-form-card"
+import { VehiclePhotosSection } from "@/components/app/driver/vehicle-photos-section"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -25,7 +29,13 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params
-  const driver = await getDriver(id)
+  const [driver, vehiclePhotos] = await Promise.all([
+    getDriver(id),
+    listDriverVehiclePhotos({ driverIdentifier: id }).catch(() => ({
+      photos: [],
+      paginationMeta: null,
+    })),
+  ])
 
   // const [showRejectDriverModal, setShowRejectDriverModal] =
   //   useState<boolean>(false)
@@ -61,6 +71,12 @@ export default async function Page({ params }: PageProps) {
           }
         >
           <div className="space-y-6 px-4 pb-6 lg:px-6">
+          <DriverSettingsCard
+            driverId={driver.identifier}
+            commissionPercentage={
+              driver.driverSettings?.commissionPercentage ?? null
+            }
+          />
           <div className="grid grid-cols-1 gap-6">
             {/* Personal Information (3/4) */}
             <div className="rounded-lg border p-4 shadow-sm sm:p-6 lg:col-span-8">
@@ -321,6 +337,16 @@ export default async function Page({ params }: PageProps) {
               url={driver.driverDocument.vehiclePhotoUrl}
             />
           </div>
+
+          <VehiclePhotosSection
+            driverId={driver.identifier}
+            initialPhotos={vehiclePhotos.photos}
+          />
+
+          <ReferenceFormCard
+            driverId={driver.identifier}
+            initialUrl={driver.driverDocument.referencePhotoUrl ?? null}
+          />
           </div>
         </DriverLayout>
     </AppLayout>

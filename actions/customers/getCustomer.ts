@@ -22,7 +22,7 @@ export default async function getCustomer(
   identifier: string
 ): Promise<CustomerDetailDTO> {
   const { data } = await httpClientInstance.get<GetCustomerResponse>(
-    `/customer-management/customers/${identifier}`
+    `/admins/customer-management/customers/${identifier}`
   )
   return data.results
 }

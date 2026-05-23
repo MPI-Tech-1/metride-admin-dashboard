@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
@@ -57,6 +58,9 @@ function RideTypeFormFields({
   onBasePriceChange,
   minimumPriceNaira,
   onMinimumPriceChange,
+  isActive,
+  onIsActiveChange,
+  showActiveToggle,
   disabled,
 }: {
   name: string
@@ -71,6 +75,9 @@ function RideTypeFormFields({
   onBasePriceChange: (v: string) => void
   minimumPriceNaira: string
   onMinimumPriceChange: (v: string) => void
+  isActive?: boolean
+  onIsActiveChange?: (v: boolean) => void
+  showActiveToggle?: boolean
   disabled?: boolean
 }) {
   return (
@@ -174,6 +181,23 @@ function RideTypeFormFields({
           />
         </Field>
       </div>
+
+      {showActiveToggle && typeof isActive === "boolean" && onIsActiveChange ? (
+        <div className="flex min-h-9 items-center gap-2.5 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
+          <Checkbox
+            id="rt-active"
+            checked={isActive}
+            onCheckedChange={(checked) => onIsActiveChange(checked === true)}
+            disabled={disabled}
+          />
+          <FieldLabel
+            htmlFor="rt-active"
+            className="cursor-pointer text-sm font-normal leading-snug"
+          >
+            Active
+          </FieldLabel>
+        </div>
+      ) : null}
     </FieldGroup>
   )
 }
@@ -248,6 +272,7 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
   const [editPpk, setEditPpk] = useState("")
   const [editBase, setEditBase] = useState("")
   const [editMin, setEditMin] = useState("")
+  const [editIsActive, setEditIsActive] = useState(true)
 
   const [pending, startTransition] = useTransition()
 
@@ -269,6 +294,7 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
     setEditPpk(koboToNairaField(rt.pricePerKilometer))
     setEditBase(koboToNairaField(rt.basePrice))
     setEditMin(koboToNairaField(rt.minimumPrice))
+    setEditIsActive(rt.isActive)
   }
 
   function submitCreate() {
@@ -310,9 +336,10 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
       return
     }
     startTransition(async () => {
-      const result = await updateRideType({
-        identifier: editRt.identifier,
+      const result = await updateRideType(editRt.identifier, {
         ...parsed.payload,
+        identifier: editRt.identifier,
+        isActive: editIsActive,
       })
       if (result.success) {
         toast.success(result.message)
@@ -368,6 +395,9 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               <TableHead className="whitespace-nowrap text-right font-medium">
                 Min
               </TableHead>
+              <TableHead className="whitespace-nowrap text-right font-medium">
+                Status
+              </TableHead>
               <TableHead className="w-[64px] text-right font-medium"> </TableHead>
             </TableRow>
           </TableHeader>
@@ -402,6 +432,17 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
                   </TableCell>
                   <TableCell className="text-right text-sm tabular-nums">
                     {formatNaira(rt.minimumPrice)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                        rt.isActive
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {rt.isActive ? "Active" : "Inactive"}
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -490,6 +531,9 @@ export function RideTypesSection({ rideTypes }: { rideTypes: RideTypeDTO[] }) {
               onBasePriceChange={setEditBase}
               minimumPriceNaira={editMin}
               onMinimumPriceChange={setEditMin}
+              isActive={editIsActive}
+              onIsActiveChange={setEditIsActive}
+              showActiveToggle
               disabled={pending}
             />
           </div>

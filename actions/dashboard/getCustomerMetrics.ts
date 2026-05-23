@@ -19,7 +19,7 @@ interface GetCustomerMetricsResponse {
 export default async function getCustomerMetrics(): Promise<CustomerMetrics> {
   const { data } =
     await httpClientInstance.get<GetCustomerMetricsResponse>(
-      `/dashboard/customer-metrics`
+      `/admins/dashboard/customer-metrics`
     )
   return data.results
 }

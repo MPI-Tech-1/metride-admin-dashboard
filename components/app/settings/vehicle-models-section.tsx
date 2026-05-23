@@ -108,8 +108,7 @@ export function VehicleModelsSection({
     startTransition(async () => {
       const result = await updateVehicleModel({
         identifier: editModel.identifier,
-        name,
-        vehicleMakeIdentifier: editModelMakeId,
+        body: { name, vehicleMakeIdentifier: editModelMakeId },
       })
       if (result.success) {
         toast.success(result.message)
