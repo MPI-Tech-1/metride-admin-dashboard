@@ -32,6 +32,7 @@ export interface BookingDetailDTO {
   }
   isRecurringBooking: boolean
   dateOfRide: string | null
+  timeOfRide: string | null
   recurringBookingDates: {
     days?: string[]
     durationInWeeks?: number
