@@ -37,6 +37,13 @@ function formatDistance(meters: number): string {
   return `${(meters / 1000).toFixed(1)} km`
 }
 
+function formatTime(time: string): string {
+  const [h, m] = time.split(":").map(Number)
+  const period = h >= 12 ? "PM" : "AM"
+  const hour = h % 12 || 12
+  return `${hour}:${String(m).padStart(2, "0")} ${period}`
+}
+
 function StatusBadge({ status }: { status: string }) {
   if (status === "completed")
     return (
@@ -274,12 +281,24 @@ export default async function Page({ params }: PageProps) {
                   <TripProgressBadge progress={booking.tripProgress} />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Date of Ride</span>
-                  <span>
-                    {booking.dateOfRide
-                      ? format(new Date(booking.dateOfRide), "MMM d, yyyy")
-                      : "—"}
-                  </span>
+                  <span className="text-muted-foreground">Scheduled For</span>
+                  <div className="flex flex-col items-end gap-0.5">
+                    {booking.dateOfRide ? (
+                      <>
+                        <span className="font-medium">
+                          {format(new Date(booking.dateOfRide), "EEE, MMM d, yyyy")}
+                        </span>
+                        {booking.timeOfRide && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <IconClock size={11} />
+                            {formatTime(booking.timeOfRide)}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span>—</span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Recurring</span>
