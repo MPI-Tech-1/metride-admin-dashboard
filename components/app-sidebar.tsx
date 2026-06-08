@@ -11,6 +11,7 @@ import {
   Activity,
   Settings,
   ShieldCheck,
+  TrendingUp,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 
@@ -92,6 +93,20 @@ const navSections: RoleAwareNavSection[] = [
           { title: "Ride types", url: "/settings/ride-types" },
           { title: "Vehicle makes", url: "/settings/vehicle-makes" },
           { title: "Vehicle models", url: "/settings/vehicle-models" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Mvest",
+    items: [
+      {
+        title: "Mvest",
+        url: "#",
+        icon: TrendingUp,
+        items: [
+          { title: "Investors", url: "/mvest/investors" },
+          { title: "Investor Vehicles", url: "/mvest/investor-vehicles" },
         ],
       },
     ],
