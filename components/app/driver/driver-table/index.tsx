@@ -19,15 +19,17 @@ export function DriversTable({ drivers, paginationMeta }: DriversTableProps) {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", String(page))
     params.set("limit", String(limit))
-    router.push(`?${params.toString()}`)
+    router.push(`?${params.toString()}`, { scroll: false })
   }
+
+  const currentLimit = Number(searchParams.get("limit")) || 50
 
   return (
     <DataTable
       data={drivers}
       columns={driverColumns}
       paginationMeta={paginationMeta}
-      onPageChange={(page) => navigate(page, paginationMeta.perPage)}
+      onPageChange={(page) => navigate(page, currentLimit)}
       onPageSizeChange={(limit) => navigate(1, limit)}
     />
   )
