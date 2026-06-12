@@ -206,7 +206,6 @@ export function DataTable<TData>({
                 value={`${paginationMeta.perPage}`}
                 onValueChange={(value) => {
                   onPageSizeChange(Number(value))
-                  onPageChange(1) // reset to first page on page size change
                 }}
               >
                 <SelectTrigger size="sm" className="w-20" id="rows-per-page">
