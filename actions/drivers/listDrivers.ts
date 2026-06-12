@@ -25,7 +25,7 @@ interface ListDriversResponse {
 
 export default async function listDrivers({
   page = 1,
-  limit = 10,
+  limit = 50,
   searchQuery,
 }: {
   page?: number

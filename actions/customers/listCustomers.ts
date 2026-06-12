@@ -24,7 +24,7 @@ interface ListCustomersResponse {
 
 export default async function listCustomers({
   page = 1,
-  limit = 10,
+  limit = 50,
 }: {
   page?: number
   limit?: number
