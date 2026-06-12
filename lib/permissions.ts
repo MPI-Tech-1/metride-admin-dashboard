@@ -31,6 +31,7 @@ const ROUTE_RULES: RouteRule[] = [
   // Admin only
   { prefix: "/user-management", roles: ["admin"] },
   { prefix: "/settings", roles: ["admin"] },
+  { prefix: "/mvest", roles: ["admin"] },
 
   // Admin + Operations
   { prefix: "/customers", roles: ["admin", "operations"] },
