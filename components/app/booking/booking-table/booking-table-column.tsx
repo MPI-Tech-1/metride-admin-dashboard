@@ -301,12 +301,34 @@ export const bookingColumns: ColumnDef<ListBookingDTO>[] = [
     header: "Payment",
     cell: ({ row }) => {
       const { paymentMethod, basePrice, paymentStatus } = row.original.bookingPayment
+      const { paymentTiming } = row.original
+      const isPaid = paymentStatus === "completed"
       return (
-        <div className="min-w-[120px]">
+        <div className="flex min-w-[160px] flex-col gap-1.5">
           <p className="font-medium">{formatNaira(basePrice)}</p>
-          <p className="text-xs capitalize text-muted-foreground">
-            {paymentMethod} · {paymentStatus}
-          </p>
+          <div className="flex flex-wrap items-center gap-1">
+            <Badge
+              variant="outline"
+              className={
+                paymentTiming === "pay_now"
+                  ? "border-blue-200 bg-blue-50 text-blue-700 text-[10px] px-1.5 py-0"
+                  : "border-orange-200 bg-orange-50 text-orange-700 text-[10px] px-1.5 py-0"
+              }
+            >
+              {paymentTiming === "pay_now" ? "Paid Upfront" : "Pays on Arrival"}
+            </Badge>
+            <Badge
+              variant="outline"
+              className={
+                isPaid
+                  ? "border-green-200 bg-green-50 text-green-700 text-[10px] px-1.5 py-0"
+                  : "border-yellow-200 bg-yellow-50 text-yellow-700 text-[10px] px-1.5 py-0"
+              }
+            >
+              {isPaid ? "Paid" : "Pending"}
+            </Badge>
+          </div>
+          <p className="text-[11px] capitalize text-muted-foreground">{paymentMethod}</p>
         </div>
       )
     },
@@ -360,6 +382,10 @@ export const bookingColumns: ColumnDef<ListBookingDTO>[] = [
     id: "actions",
     header: "",
     enableHiding: false,
-    cell: ({ row }) => <BookingRowActions booking={row.original} />,
+    cell: ({ row }) => (
+      <div onClick={(e) => e.stopPropagation()}>
+        <BookingRowActions booking={row.original} />
+      </div>
+    ),
   },
 ]

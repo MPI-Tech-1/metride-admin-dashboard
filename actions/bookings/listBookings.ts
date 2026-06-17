@@ -34,10 +34,12 @@ interface BookingPayment {
 export interface ListBookingDTO {
   identifier: string
   typeOfBooking: "shuttle" | "instant"
+  paymentTiming: "pay_now" | "pay_on_arrival"
   status: string
   tripProgress: string
   isRecurringBooking: boolean
   dateOfRide: string | null
+  timeOfRide: string | null
   recurringBookingDates: {
     days?: string[]
     durationInWeeks?: number

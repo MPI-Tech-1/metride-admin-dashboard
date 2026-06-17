@@ -56,6 +56,7 @@ interface DataTableProps<TData> {
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
   initialColumnVisibility?: VisibilityState
+  onRowClick?: (row: TData) => void
 }
 
 export function DataTable<TData>({
@@ -65,6 +66,7 @@ export function DataTable<TData>({
   onPageChange,
   onPageSizeChange,
   initialColumnVisibility,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -167,6 +169,8 @@ export function DataTable<TData>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
+                    onClick={() => onRowClick?.(row.original)}
+                    className={onRowClick ? "cursor-pointer" : ""}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

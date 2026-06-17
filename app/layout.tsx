@@ -42,7 +42,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", nunito.variable)}
     >
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider>
           <Providers>{children}</Providers>
           <Toaster richColors position="top-right" />
