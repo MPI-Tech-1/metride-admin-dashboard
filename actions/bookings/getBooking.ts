@@ -11,6 +11,7 @@ export interface BookingGpsLog {
 export interface BookingDetailDTO {
   identifier: string
   typeOfBooking: "shuttle" | "instant"
+  paymentTiming: "pay_now" | "pay_on_arrival"
   departureLocationName: string
   departureLocationGpsCoordinates: string
   departureLocationType: string
