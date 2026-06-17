@@ -15,6 +15,7 @@ import {
 import getBooking from "@/actions/bookings/getBooking"
 import AppLayout from "@/components/layouts/app-layout"
 import { BookingMap } from "@/components/app/booking/booking-map"
+import { BookingDetailActions } from "@/components/app/booking/booking-detail-actions"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BreadcrumbItem } from "@/types/breadcrumb"
@@ -91,27 +92,36 @@ export default async function Page({ params }: PageProps) {
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="flex flex-col gap-6 px-4 py-6 lg:px-6">
         {/* Page header */}
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold">Booking Details</h1>
-            <Badge variant="outline" className="font-mono text-xs">
-              {booking.identifier.slice(0, 8)}…
-            </Badge>
-            <Badge
-              variant={booking.typeOfBooking === "shuttle" ? "default" : "secondary"}
-              className="capitalize"
-            >
-              {booking.typeOfBooking}
-            </Badge>
-            <StatusBadge status={booking.status} />
-            <TripProgressBadge progress={booking.tripProgress} />
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-bold">Booking Details</h1>
+                <Badge variant="outline" className="font-mono text-xs">
+                  {booking.identifier.slice(0, 8)}…
+                </Badge>
+                <Badge
+                  variant={booking.typeOfBooking === "shuttle" ? "default" : "secondary"}
+                  className="capitalize"
+                >
+                  {booking.typeOfBooking}
+                </Badge>
+                <StatusBadge status={booking.status} />
+                <TripProgressBadge progress={booking.tripProgress} />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Created{" "}
+                {formatDistanceToNow(new Date(booking.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
+            <BookingDetailActions
+              bookingIdentifier={booking.identifier}
+              hasDriver={!!booking.assignedDriver}
+              status={booking.status}
+            />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Created{" "}
-            {formatDistanceToNow(new Date(booking.createdAt), {
-              addSuffix: true,
-            })}
-          </p>
         </div>
 
         {/* Main grid */}
@@ -352,6 +362,32 @@ export default async function Page({ params }: PageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Payment Timing</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      booking.paymentTiming === "pay_now"
+                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                        : "border-orange-200 bg-orange-50 text-orange-700"
+                    }
+                  >
+                    {booking.paymentTiming === "pay_now" ? "Paid Upfront" : "Pays on Arrival"}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Payment Status</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      booking.bookingPayment.amountPaid > 0
+                        ? "border-green-200 bg-green-50 text-green-700"
+                        : "border-yellow-200 bg-yellow-50 text-yellow-700"
+                    }
+                  >
+                    {booking.bookingPayment.amountPaid > 0 ? "Paid" : "Pending"}
+                  </Badge>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Base Price</span>
                   <span>{formatNaira(booking.bookingPayment.basePrice)}</span>
