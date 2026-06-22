@@ -8,6 +8,7 @@ import {
   useMap,
 } from "@vis.gl/react-google-maps"
 import { io, Socket } from "socket.io-client"
+import { useSession } from "next-auth/react"
 import { IconCar, IconWifi, IconWifiOff } from "@tabler/icons-react"
 
 import type { GoogleMapsClientConfig } from "@/lib/google-maps-client"
@@ -118,16 +119,26 @@ function DriverPolylines({
 
 export function LiveTrackingMap({
   googleMaps,
+  websocketUrl,
 }: {
   googleMaps: GoogleMapsClientConfig
+  websocketUrl: string
 }) {
+  const { data: session } = useSession()
   const [connected, setConnected] = useState(false)
   const [bookingDrivers, setBookingDrivers] = useState<BookingDriverMap>({})
   const [selectedCity, setSelectedCity] = useState<City>(CITIES[0])
   const socketRef = useRef<Socket | null>(null)
 
+  const accessToken = session?.user?.accessToken
+
   useEffect(() => {
-    const socket = io("https://api.stage.metride.app")
+    if (!accessToken) return
+
+    const socket = io(websocketUrl, {
+      auth: { token: accessToken },
+      transports: ["websocket"],
+    })
     socketRef.current = socket
 
     socket.on("connect", () => {
@@ -142,6 +153,13 @@ export function LiveTrackingMap({
     socket.on("booking:driver-location", (data) => {
       const coords = parseCoords(data.gpsCoordinates)
       if (!coords) return
+
+      const driverName =
+        data.driver.fullName ??
+        `${data.driver.firstName ?? ""} ${data.driver.lastName ?? ""}`.trim()
+      const customerName =
+        data.customer.fullName ??
+        `${data.customer.firstName ?? ""} ${data.customer.lastName ?? ""}`.trim()
 
       setBookingDrivers((prev) => {
         const previousDriver = prev[data.driver.identifier]
@@ -158,8 +176,8 @@ export function LiveTrackingMap({
           ...prev,
           [data.driver.identifier]: {
             bookingIdentifier: data.identifier,
-            driverFullName: data.driver.fullName,
-            customerFullName: data.customer.fullName,
+            driverFullName: driverName,
+            customerFullName: customerName,
             ...coords,
             path: nextPath,
           },
@@ -170,7 +188,7 @@ export function LiveTrackingMap({
     return () => {
       socket.disconnect()
     }
-  }, [])
+  }, [websocketUrl, accessToken])
 
   const driverEntries = Object.entries(bookingDrivers)
   const showMapsConfigHint = !isGoogleMapsClientReady(googleMaps)
@@ -200,15 +218,18 @@ export function LiveTrackingMap({
               title={driver.driverFullName}
             >
               <div className="group relative flex flex-col items-center">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white bg-primary text-primary-foreground shadow-lg">
-                  <IconCar size={15} />
+                {/* Tooltip */}
+                <div className="pointer-events-none absolute -top-16 whitespace-nowrap rounded-lg bg-foreground px-3 py-2 text-xs font-medium text-background opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                  <p className="font-semibold">{driver.driverFullName}</p>
+                  <p className="text-[11px] text-background/70">{driver.customerFullName}</p>
+                  <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-foreground" />
                 </div>
-                <div className="pointer-events-none absolute -top-14 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 shadow transition-opacity duration-150 group-hover:opacity-100">
-                  <p>{driver.driverFullName}</p>
-                  <p className="text-[11px] text-background/80">
-                    {driver.customerFullName}
-                  </p>
+                {/* Marker */}
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-xl">
+                  <IconCar size={24} />
+                  <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-white bg-green-500" />
                 </div>
+                <div className="mt-0.5 h-2 w-0.5 bg-foreground/40" />
               </div>
             </AdvancedMarker>
           ))}

@@ -9,11 +9,12 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: "Live Tracking", href: "#" }]
 
 export default async function Page() {
   const googleMaps = getGoogleMapsClientConfig()
+  const websocketUrl = process.env.WEBSOCKET_BASE_URL ?? "https://api.stage.metride.app"
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="-mx-4 -mb-4 flex flex-1 overflow-hidden">
-        <LiveTrackingMap googleMaps={googleMaps} />
+        <LiveTrackingMap googleMaps={googleMaps} websocketUrl={websocketUrl} />
       </div>
     </AppLayout>
   )
