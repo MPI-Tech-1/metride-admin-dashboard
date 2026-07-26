@@ -31,6 +31,7 @@ const ROUTE_RULES: RouteRule[] = [
   // Admin only
   { prefix: "/user-management", roles: ["admin"] },
   { prefix: "/settings", roles: ["admin"] },
+  { prefix: "/promotions", roles: ["admin"] },
   { prefix: "/mvest", roles: ["admin"] },
 
   // Admin + Operations
@@ -78,6 +79,7 @@ export function isPathAllowedForRole(pathname: string, role: Role): boolean {
  * forbidden route). Dashboard is open to all roles, so it works as a safe
  * universal default.
  */
-export function defaultLandingPath(_role: Role): string {
+export function defaultLandingPath(role: Role): string {
+  void role
   return "/dashboard"
 }

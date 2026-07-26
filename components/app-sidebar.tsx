@@ -12,6 +12,7 @@ import {
   Settings,
   ShieldCheck,
   TrendingUp,
+  Tags,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 
@@ -84,6 +85,11 @@ const navSections: RoleAwareNavSection[] = [
     label: "Configuration",
     items: [
       {
+        title: "Promotions",
+        url: "/promotions",
+        icon: Tags,
+      },
+      {
         title: "Settings",
         url: "#",
         icon: Settings,
@@ -105,8 +111,9 @@ const navSections: RoleAwareNavSection[] = [
         url: "#",
         icon: TrendingUp,
         items: [
-          { title: "Investors", url: "/mvest/investors" },
-          { title: "Investor Vehicles", url: "/mvest/investor-vehicles" },
+          { title: "Owners", url: "/mvest/owners" },
+          { title: "Agreements", url: "/mvest/agreements" },
+          { title: "Earnings", url: "/mvest/earnings" },
         ],
       },
     ],
