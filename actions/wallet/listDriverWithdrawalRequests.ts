@@ -36,7 +36,7 @@ export default async function listDriverWithdrawalRequests({
 }> {
   const { data } =
     await httpClientInstance.get<ListDriverWithdrawalRequestsResponse>(
-      `/wallet-management/driver/withdrawal-requests`,
+      `/admins/wallet-management/driver/withdrawal-requests`,
       { params: { page, limit } }
     )
   return {

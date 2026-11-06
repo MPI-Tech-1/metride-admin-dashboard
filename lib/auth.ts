@@ -1,6 +1,7 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import HttpClient from "@/lib/http-client"
+import { normalizeRole, type Role } from "@/lib/permissions"
 import axios from "axios"
 
 interface AuthApiResponse {
@@ -12,6 +13,7 @@ interface AuthApiResponse {
     firstName: string
     lastName: string
     email: string
+    role: string
     accessCredentials: {
       type: string
       token: string
@@ -31,7 +33,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           const { apiResponse } = await HttpClient.post({
-            endpointUrl: `${process.env.API_BASE_URL}/authentication/authenticate`,
+            endpointUrl: `${process.env.API_BASE_URL}/admins/authentication/authenticate`,
             dataPayload: {
               email: credentials?.email,
               password: credentials?.password,
@@ -46,11 +48,17 @@ export const authOptions: NextAuthOptions = {
 
           const response = apiResponse as AuthApiResponse
 
+          const role = normalizeRole(response.results.role)
+          if (!role) {
+            throw new Error("Your account does not have a valid role assigned.")
+          }
+
           return {
             id: response.results.identifier,
             name: `${response.results.firstName} ${response.results.lastName}`,
             email: response.results.email,
             accessToken: response.results.accessCredentials.token,
+            role,
           }
         } catch (error) {
           if (axios.isAxiosError(error) && error.response) {
@@ -70,14 +78,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = (user as { accessToken: string }).accessToken
-        token.id = user.id
+        const typedUser = user as { accessToken: string; role: Role }
+        token.accessToken = typedUser.accessToken
+        token.id = user.id as string
+        token.role = typedUser.role
       }
       return token
     },
     async session({ session, token }) {
-      session.user.accessToken = token.accessToken as string
-      session.user.id = token.id as string
+      session.user.accessToken = token.accessToken
+      session.user.id = token.id
+      session.user.role = token.role
       return session
     },
   },

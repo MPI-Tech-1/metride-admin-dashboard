@@ -1,12 +1,16 @@
 export const dynamic = "force-dynamic"
 
+import { Suspense } from "react"
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
-import { SectionCards } from "@/components/app/driver/section-cards"
 import { DriversTable } from "@/components/app/driver/driver-table"
 import listDrivers from "@/actions/drivers/listDrivers"
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; limit?: string }>
+}) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: "Drivers",
@@ -14,9 +18,12 @@ export default async function Page() {
     },
   ]
 
-  const { drivers, paginationMeta } = await listDrivers()
+  const { page: pageParam, limit: limitParam } = await searchParams
+  const page = Number(pageParam) || 1
+  const limit = Number(limitParam) || 50
 
-  console.log(drivers, paginationMeta)
+  const { drivers, paginationMeta } = await listDrivers({ page, limit })
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -29,8 +36,9 @@ export default async function Page() {
               </p>
             </div>
           </div>
-          <SectionCards />
-          <DriversTable drivers={drivers} paginationMeta={paginationMeta} />
+          <Suspense>
+            <DriversTable drivers={drivers} paginationMeta={paginationMeta} />
+          </Suspense>
         </div>
       </div>
     </AppLayout>

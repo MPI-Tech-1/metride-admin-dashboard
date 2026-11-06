@@ -5,9 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-    --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
     --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+    /* Optional brand accents (bg-brand-gold, etc.) */
+    --color-brand-gold: var(--brand-gold);
+    --color-brand-gold-muted: var(--brand-gold-muted);
+    --color-brand-ink: var(--brand-ink);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -48,73 +52,84 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+  Dashboard theme: mature slate / cool gray with a single restrained blue primary.
+  (Brand gold tokens remain for optional utilities; primary is not gold-forward.)
+*/
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.208 0.042 265.755);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.208 0.042 265.755);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.208 0.042 265.755);
-    --primary: oklch(0.208 0.042 265.755);
-    --primary-foreground: oklch(0.984 0.003 247.858);
-    --secondary: oklch(0.968 0.007 247.896);
-    --secondary-foreground: oklch(0.208 0.042 265.755);
-    --muted: oklch(0.968 0.007 247.896);
-    --muted-foreground: oklch(0.554 0.046 257.417);
-    --accent: oklch(0.968 0.007 247.896);
-    --accent-foreground: oklch(0.208 0.042 265.755);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.929 0.013 255.508);
-    --input: oklch(0.929 0.013 255.508);
-    --ring: oklch(0.704 0.04 256.788);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
+    /* Optional brand accents (marketing / badges); dashboard uses neutral + blue primary */
+    --brand-ink: oklch(0.22 0.02 260);
+    --brand-gold: oklch(0.58 0.09 78);
+    --brand-gold-bright: oklch(0.68 0.1 80);
+    --brand-gold-muted: oklch(0.93 0.02 85);
+
+    /* Clean operations UI: cool neutrals + restrained blue primary */
+    --background: oklch(0.985 0.004 258);
+    --foreground: oklch(0.22 0.02 260);
+    --card: oklch(0.998 0.003 258);
+    --card-foreground: oklch(0.22 0.02 260);
+    --popover: oklch(0.998 0.003 258);
+    --popover-foreground: oklch(0.22 0.02 260);
+    --primary: oklch(0.44 0.12 264);
+    --primary-foreground: oklch(0.99 0.004 258);
+    --secondary: oklch(0.96 0.006 260);
+    --secondary-foreground: oklch(0.26 0.02 260);
+    --muted: oklch(0.965 0.006 258);
+    --muted-foreground: oklch(0.5 0.02 260);
+    --accent: oklch(0.94 0.012 262);
+    --accent-foreground: oklch(0.24 0.025 262);
+    --destructive: oklch(0.55 0.22 25);
+    --border: oklch(0.91 0.006 260);
+    --input: oklch(0.91 0.006 260);
+    --ring: oklch(0.58 0.1 264);
+    --chart-1: oklch(0.55 0.12 264);
+    --chart-2: oklch(0.62 0.08 258);
+    --chart-3: oklch(0.5 0.06 252);
+    --chart-4: oklch(0.72 0.06 230);
+    --chart-5: oklch(0.42 0.03 260);
     --radius: 0.625rem;
-    --sidebar: oklch(0.984 0.003 247.858);
-    --sidebar-foreground: oklch(0.372 0.044 257.287);
-    --sidebar-primary: oklch(0.208 0.042 265.755);
-    --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-    --sidebar-accent: oklch(0.945 0.011 252.5);
-    --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-    --sidebar-border: oklch(0.929 0.013 255.508);
-    --sidebar-ring: oklch(0.704 0.04 256.788);
+    --sidebar: oklch(0.98 0.005 258);
+    --sidebar-foreground: oklch(0.22 0.02 260);
+    --sidebar-primary: oklch(0.44 0.12 264);
+    --sidebar-primary-foreground: oklch(0.99 0.004 258);
+    --sidebar-accent: oklch(0.94 0.01 258);
+    --sidebar-accent-foreground: oklch(0.24 0.02 260);
+    --sidebar-border: oklch(0.91 0.006 260);
+    --sidebar-ring: oklch(0.58 0.1 264);
 }
 
 .dark {
-    --background: oklch(0.145 0.012 264);
-    --foreground: oklch(0.984 0.003 247.858);
-    --card: oklch(0.185 0.016 264);
-    --card-foreground: oklch(0.984 0.003 247.858);
-    --popover: oklch(0.185 0.016 264);
-    --popover-foreground: oklch(0.984 0.003 247.858);
-    --primary: oklch(0.929 0.013 255.508);
-    --primary-foreground: oklch(0.208 0.042 265.755);
-    --secondary: oklch(0.255 0.02 264);
-    --secondary-foreground: oklch(0.984 0.003 247.858);
-    --muted: oklch(0.255 0.02 264);
-    --muted-foreground: oklch(0.704 0.04 256.788);
-    --accent: oklch(0.255 0.02 264);
-    --accent-foreground: oklch(0.984 0.003 247.858);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 9%);
-    --input: oklch(1 0 0 / 14%);
-    --ring: oklch(0.554 0.046 257.417);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.165 0.014 264);
-    --sidebar-foreground: oklch(0.869 0.022 252.894);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-    --sidebar-accent: oklch(0.255 0.02 264);
-    --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-    --sidebar-border: oklch(1 0 0 / 9%);
-    --sidebar-ring: oklch(0.554 0.046 257.417);
+    --background: oklch(0.2 0.018 262);
+    --foreground: oklch(0.96 0.008 258);
+    --card: oklch(0.23 0.018 262);
+    --card-foreground: oklch(0.96 0.008 258);
+    --popover: oklch(0.23 0.018 262);
+    --popover-foreground: oklch(0.96 0.008 258);
+    --primary: oklch(0.7 0.11 264);
+    --primary-foreground: oklch(0.16 0.02 262);
+    --secondary: oklch(0.28 0.02 262);
+    --secondary-foreground: oklch(0.96 0.008 258);
+    --muted: oklch(0.28 0.018 262);
+    --muted-foreground: oklch(0.68 0.02 260);
+    --accent: oklch(0.3 0.025 264);
+    --accent-foreground: oklch(0.96 0.008 258);
+    --destructive: oklch(0.65 0.18 22);
+    --border: oklch(0.34 0.02 262);
+    --input: oklch(0.32 0.02 262);
+    --ring: oklch(0.62 0.1 264);
+    --chart-1: oklch(0.7 0.11 264);
+    --chart-2: oklch(0.62 0.08 258);
+    --chart-3: oklch(0.52 0.06 252);
+    --chart-4: oklch(0.78 0.06 230);
+    --chart-5: oklch(0.88 0.02 258);
+    --sidebar: oklch(0.185 0.02 262);
+    --sidebar-foreground: oklch(0.96 0.008 258);
+    --sidebar-primary: oklch(0.7 0.11 264);
+    --sidebar-primary-foreground: oklch(0.16 0.02 262);
+    --sidebar-accent: oklch(0.27 0.02 262);
+    --sidebar-accent-foreground: oklch(0.96 0.008 258);
+    --sidebar-border: oklch(0.32 0.02 262);
+    --sidebar-ring: oklch(0.62 0.1 264);
 }
 
 @layer base {
@@ -123,16 +138,17 @@
   }
   html {
     @apply font-sans;
-    font-feature-settings: "cv11", "ss01";
-    text-rendering: optimizeLegibility;
   }
   body {
     @apply bg-background text-foreground;
   }
-  h1, h2, h3, h4 {
-    @apply font-heading tracking-tight;
-  }
   table, [data-slot="card-title"] {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Google Places Autocomplete is portaled to <body>; keep it above Radix dialogs (z-50). */
+.pac-container {
+  z-index: 10000 !important;
+  pointer-events: auto !important;
 }

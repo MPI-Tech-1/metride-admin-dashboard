@@ -9,7 +9,7 @@ export default async function approveWithdrawalRequest(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.post(
-      `/wallet-management/driver/withdrawal-requests/${identifier}/approve`
+      `/admins/wallet-management/driver/withdrawal-requests/${identifier}/approve`
     )
     revalidatePath("/wallet/payouts")
     return {

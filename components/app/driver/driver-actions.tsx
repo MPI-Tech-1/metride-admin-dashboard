@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { Button } from "@/components/ui/button"
-import { RejectDriverModal } from "@/components/app/driver/reject-driver-modal"
-import approveDriver from "@/actions/drivers/approveDriver"
 import { toast } from "sonner"
+
+import approveDriver from "@/actions/drivers/approveDriver"
+import { RejectDriverModal } from "@/components/app/driver/reject-driver-modal"
+import { Button } from "@/components/ui/button"
 
 interface DriverActionsProps {
   driverId: string
@@ -33,7 +34,7 @@ export default function DriverActions({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           className="p-4"
           onClick={handleApprove}

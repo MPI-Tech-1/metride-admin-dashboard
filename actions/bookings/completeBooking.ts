@@ -9,7 +9,7 @@ export default async function completeBooking(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.patch(
-      `/bookings/${identifier}/complete`
+      `/admins/bookings/${identifier}/complete`
     )
     revalidatePath("/booking")
     return { success: true, message: data.message }

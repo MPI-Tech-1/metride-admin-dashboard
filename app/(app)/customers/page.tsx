@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic"
 
+import { Suspense } from "react"
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import { CustomerSectionCards } from "@/components/app/customer/section-cards"
@@ -7,7 +8,11 @@ import { CustomersTable } from "@/components/app/customer/customer-table"
 import listCustomers from "@/actions/customers/listCustomers"
 import getCustomerMetrics from "@/actions/dashboard/getCustomerMetrics"
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; limit?: string }>
+}) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: "Customers",
@@ -15,8 +20,12 @@ export default async function Page() {
     },
   ]
 
+  const { page: pageParam, limit: limitParam } = await searchParams
+  const page = Number(pageParam) || 1
+  const limit = Number(limitParam) || 50
+
   const [{ customers, paginationMeta }, metrics] = await Promise.all([
-    listCustomers(),
+    listCustomers({ page, limit }),
     getCustomerMetrics(),
   ])
 
@@ -31,7 +40,9 @@ export default async function Page() {
             </p>
           </div>
           <CustomerSectionCards metrics={metrics} />
-          <CustomersTable customers={customers} paginationMeta={paginationMeta} />
+          <Suspense>
+            <CustomersTable customers={customers} paginationMeta={paginationMeta} />
+          </Suspense>
         </div>
       </div>
     </AppLayout>

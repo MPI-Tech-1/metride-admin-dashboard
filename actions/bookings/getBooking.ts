@@ -11,6 +11,7 @@ export interface BookingGpsLog {
 export interface BookingDetailDTO {
   identifier: string
   typeOfBooking: "shuttle" | "instant"
+  paymentTiming: "pay_now" | "pay_on_arrival"
   departureLocationName: string
   departureLocationGpsCoordinates: string
   departureLocationType: string
@@ -32,6 +33,7 @@ export interface BookingDetailDTO {
   }
   isRecurringBooking: boolean
   dateOfRide: string | null
+  timeOfRide: string | null
   recurringBookingDates: {
     days?: string[]
     durationInWeeks?: number
@@ -68,7 +70,7 @@ export default async function getBooking(
   identifier: string
 ): Promise<BookingDetailDTO> {
   const { data } = await httpClientInstance.get<GetBookingResponse>(
-    `/bookings/${identifier}`
+    `/admins/bookings/${identifier}`
   )
   return data.results
 }

@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic"
 
+import { Suspense } from "react"
 import AppLayout from "@/components/layouts/app-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import { BookingSectionCards } from "@/components/app/booking/section-cards"
@@ -7,7 +8,11 @@ import { BookingsTable } from "@/components/app/booking/booking-table"
 import listBookings from "@/actions/bookings/listBookings"
 import getBookingMetrics from "@/actions/dashboard/getBookingMetrics"
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; limit?: string }>
+}) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: "Bookings",
@@ -15,8 +20,12 @@ export default async function Page() {
     },
   ]
 
+  const { page: pageParam, limit: limitParam } = await searchParams
+  const page = Number(pageParam) || 1
+  const limit = Number(limitParam) || 50
+
   const [{ bookings, paginationMeta }, metrics] = await Promise.all([
-    listBookings(),
+    listBookings({ page, limit }),
     getBookingMetrics(),
   ])
 
@@ -31,7 +40,9 @@ export default async function Page() {
             </p>
           </div>
           <BookingSectionCards metrics={metrics} />
-          <BookingsTable bookings={bookings} paginationMeta={paginationMeta} />
+          <Suspense>
+            <BookingsTable bookings={bookings} paginationMeta={paginationMeta} />
+          </Suspense>
         </div>
       </div>
     </AppLayout>

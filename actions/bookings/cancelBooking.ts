@@ -9,7 +9,7 @@ export default async function cancelBooking(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.patch(
-      `/bookings/${identifier}/cancel`
+      `/admins/bookings/${identifier}/cancel`
     )
     revalidatePath("/booking")
     return { success: true, message: data.message }

@@ -19,7 +19,7 @@ export default async function assignDriver({
 }): Promise<{ success: boolean; message: string }> {
   try {
     const { data } = await httpClientInstance.patch(
-      `/bookings/${bookingIdentifier}/assign-driver`,
+      `/admins/bookings/${bookingIdentifier}/assign-driver`,
       { driverIdentifier }
     )
     revalidatePath("/booking")

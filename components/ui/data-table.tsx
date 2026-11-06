@@ -58,6 +58,8 @@ interface DataTableProps<TData> {
   onPageSizeChange: (pageSize: number) => void
   /** When provided, clicking a row navigates to the returned URL. */
   getRowHref?: (row: TData) => string
+  initialColumnVisibility?: VisibilityState
+  onRowClick?: (row: TData) => void
 }
 
 const INTERACTIVE_SELECTOR =
@@ -70,6 +72,8 @@ export function DataTable<TData>({
   onPageChange,
   onPageSizeChange,
   getRowHref,
+  initialColumnVisibility,
+  onRowClick,
 }: DataTableProps<TData>) {
   const router = useRouter()
 
@@ -91,7 +95,7 @@ export function DataTable<TData>({
   }
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+    React.useState<VisibilityState>(initialColumnVisibility ?? {})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
@@ -190,12 +194,13 @@ export function DataTable<TData>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={getRowHref ? "cursor-pointer" : undefined}
-                    onClick={
-                      getRowHref
-                        ? (e) => handleRowClick(e, getRowHref(row.original))
-                        : undefined
+                    className={
+                      getRowHref || onRowClick ? "cursor-pointer" : undefined
                     }
+                    onClick={(e) => {
+                      if (getRowHref) handleRowClick(e, getRowHref(row.original))
+                      else onRowClick?.(row.original)
+                    }}
                     onAuxClick={
                       getRowHref
                         ? (e) => handleRowClick(e, getRowHref(row.original))
@@ -245,7 +250,6 @@ export function DataTable<TData>({
                 value={`${paginationMeta.perPage}`}
                 onValueChange={(value) => {
                   onPageSizeChange(Number(value))
-                  onPageChange(1) // reset to first page on page size change
                 }}
               >
                 <SelectTrigger size="sm" className="w-20" id="rows-per-page">

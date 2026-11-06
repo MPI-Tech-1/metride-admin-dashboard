@@ -15,6 +15,7 @@ import {
 import getBooking from "@/actions/bookings/getBooking"
 import AppLayout from "@/components/layouts/app-layout"
 import { BookingMap } from "@/components/app/booking/booking-map"
+import { BookingDetailActions } from "@/components/app/booking/booking-detail-actions"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BreadcrumbItem } from "@/types/breadcrumb"
@@ -35,6 +36,13 @@ function formatDuration(seconds: number): string {
 function formatDistance(meters: number): string {
   if (meters < 1000) return `${meters} m`
   return `${(meters / 1000).toFixed(1)} km`
+}
+
+function formatTime(time: string): string {
+  const [h, m] = time.split(":").map(Number)
+  const period = h >= 12 ? "PM" : "AM"
+  const hour = h % 12 || 12
+  return `${hour}:${String(m).padStart(2, "0")} ${period}`
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -84,27 +92,36 @@ export default async function Page({ params }: PageProps) {
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="flex flex-col gap-6 px-4 py-6 lg:px-6">
         {/* Page header */}
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold">Booking Details</h1>
-            <Badge variant="outline" className="font-mono text-xs">
-              {booking.identifier.slice(0, 8)}…
-            </Badge>
-            <Badge
-              variant={booking.typeOfBooking === "shuttle" ? "default" : "secondary"}
-              className="capitalize"
-            >
-              {booking.typeOfBooking}
-            </Badge>
-            <StatusBadge status={booking.status} />
-            <TripProgressBadge progress={booking.tripProgress} />
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-bold">Booking Details</h1>
+                <Badge variant="outline" className="font-mono text-xs">
+                  {booking.identifier.slice(0, 8)}…
+                </Badge>
+                <Badge
+                  variant={booking.typeOfBooking === "shuttle" ? "default" : "secondary"}
+                  className="capitalize"
+                >
+                  {booking.typeOfBooking}
+                </Badge>
+                <StatusBadge status={booking.status} />
+                <TripProgressBadge progress={booking.tripProgress} />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Created{" "}
+                {formatDistanceToNow(new Date(booking.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
+            <BookingDetailActions
+              bookingIdentifier={booking.identifier}
+              hasDriver={!!booking.assignedDriver}
+              status={booking.status}
+            />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Created{" "}
-            {formatDistanceToNow(new Date(booking.createdAt), {
-              addSuffix: true,
-            })}
-          </p>
         </div>
 
         {/* Main grid */}
@@ -248,38 +265,6 @@ export default async function Page({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* GPS Logs */}
-            {booking.bookingGpsLogs.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    GPS Logs ({booking.bookingGpsLogs.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {booking.bookingGpsLogs.map((log, i) => (
-                      <div
-                        key={log.identifier}
-                        className="flex items-center justify-between px-6 py-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700">
-                            {i + 1}
-                          </span>
-                          <span className="font-mono text-xs text-muted-foreground">
-                            {log.gpsCoordinates}
-                          </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(log.createdAt), "MMM d, HH:mm:ss")}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Right column */}
@@ -306,12 +291,24 @@ export default async function Page({ params }: PageProps) {
                   <TripProgressBadge progress={booking.tripProgress} />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Date of Ride</span>
-                  <span>
-                    {booking.dateOfRide
-                      ? format(new Date(booking.dateOfRide), "MMM d, yyyy")
-                      : "—"}
-                  </span>
+                  <span className="text-muted-foreground">Scheduled For</span>
+                  <div className="flex flex-col items-end gap-0.5">
+                    {booking.dateOfRide ? (
+                      <>
+                        <span className="font-medium">
+                          {format(new Date(booking.dateOfRide), "EEE, MMM d, yyyy")}
+                        </span>
+                        {booking.timeOfRide && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <IconClock size={11} />
+                            {formatTime(booking.timeOfRide)}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span>—</span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Recurring</span>
@@ -365,6 +362,32 @@ export default async function Page({ params }: PageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Payment Timing</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      booking.paymentTiming === "pay_now"
+                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                        : "border-orange-200 bg-orange-50 text-orange-700"
+                    }
+                  >
+                    {booking.paymentTiming === "pay_now" ? "Paid Upfront" : "Pays on Arrival"}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Payment Status</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      booking.bookingPayment.amountPaid > 0
+                        ? "border-green-200 bg-green-50 text-green-700"
+                        : "border-yellow-200 bg-yellow-50 text-yellow-700"
+                    }
+                  >
+                    {booking.bookingPayment.amountPaid > 0 ? "Paid" : "Pending"}
+                  </Badge>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Base Price</span>
                   <span>{formatNaira(booking.bookingPayment.basePrice)}</span>

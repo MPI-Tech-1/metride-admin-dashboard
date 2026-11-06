@@ -24,7 +24,7 @@ interface ListCustomersResponse {
 
 export default async function listCustomers({
   page = 1,
-  limit = 10,
+  limit = 50,
 }: {
   page?: number
   limit?: number
@@ -33,7 +33,7 @@ export default async function listCustomers({
   paginationMeta: PaginationMeta
 }> {
   const { data } = await httpClientInstance.get<ListCustomersResponse>(
-    `/customer-management/customers`,
+    `/admins/customer-management/customers`,
     { params: { page, limit } }
   )
   return {
