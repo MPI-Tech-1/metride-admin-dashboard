@@ -22,6 +22,8 @@ import DriverActions from "@/components/app/driver/driver-actions"
 import { DriverSettingsCard } from "@/components/app/driver/driver-settings-card"
 import { ReferenceFormCard } from "@/components/app/driver/reference-form-card"
 import { VehiclePhotosSection } from "@/components/app/driver/vehicle-photos-section"
+import { EditDriverModal } from "@/components/app/driver/edit-driver-modal"
+import listCities from "@/actions/settings/listCities"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -29,13 +31,15 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params
-  const [driver, vehiclePhotos] = await Promise.all([
+  const [driver, vehiclePhotos, cities] = await Promise.all([
     getDriver(id),
     listDriverVehiclePhotos({ driverIdentifier: id }).catch(() => ({
       photos: [],
       paginationMeta: null,
     })),
+    listCities().catch(() => []),
   ])
+  const personal = driver.driverPersonalInformation
 
   // const [showRejectDriverModal, setShowRejectDriverModal] =
   //   useState<boolean>(false)
@@ -89,9 +93,26 @@ export default async function Page({ params }: PageProps) {
                     This section contains the driver personal information.
                   </p>
                 </div>
-                <button className="mt-1">
-                  <Pencil className="h-4 w-4 text-gray-500" />
-                </button>
+                <EditDriverModal
+                  driverId={driver.identifier}
+                  cities={cities}
+                  driver={{
+                    firstName: driver.firstName,
+                    lastName: driver.lastName,
+                    email: driver.email,
+                    mobileNumber: driver.mobileNumber,
+                    cityIdentifier:
+                      cities.find((c) => c.identifier === personal?.cityId)
+                        ?.identifier ?? "",
+                    dateOfBirth: personal?.dateOfBirth
+                      ? format(new Date(personal.dateOfBirth), "yyyy-MM-dd")
+                      : "",
+                    gender: personal?.gender?.toLowerCase() ?? "",
+                    homeAddress: personal?.homeAddress ?? "",
+                    nationalIdentificationNumber:
+                      personal?.nationalIdentificationNumber ?? "",
+                  }}
+                />
               </div>
 
               <div className="mt-4">
