@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import Link from "next/link"
-import { Sparkles } from "lucide-react"
+import { CheckCircle2, Sparkles } from "lucide-react"
 
 import { LoginForm } from "@/components/authentication/login/login-form"
 import { MetRideLogoSquare } from "@/components/brand/met-ride-logos"
@@ -27,6 +27,9 @@ export default function LoginPage() {
             </Suspense>
           </div>
         </div>
+        <p className="text-center text-xs text-muted-foreground md:text-left">
+          © {new Date().getFullYear()} Met Ride · Authorized personnel only
+        </p>
       </div>
       <div className="relative hidden overflow-hidden bg-muted/40 p-10 lg:flex lg:items-center">
         <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-primary/[0.12] blur-3xl" />
@@ -39,13 +42,25 @@ export default function LoginPage() {
             <Sparkles className="size-3.5" />
             Admin operations center
           </p>
-          <h2 className="text-3xl font-bold tracking-tight">
+          <h2 className="text-3xl font-bold tracking-tight text-balance">
             Run your transport platform from one dashboard
           </h2>
           <p className="text-sm text-muted-foreground">
             Monitor bookings in real time, manage drivers, and process payouts
             with secure admin access.
           </p>
+          <ul className="space-y-3 pt-2 text-sm">
+            {[
+              "Live trip tracking across every city",
+              "Driver approvals, commissions and payouts",
+              "Customer support with full booking history",
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-3">
+                <CheckCircle2 className="size-4 shrink-0 text-primary" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

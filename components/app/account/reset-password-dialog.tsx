@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useTransition } from "react"
-import { signOut } from "next-auth/react"
+import { signOutToLogin } from "@/lib/sign-out"
 import { Eye, EyeOff, Loader2, Mail, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 
@@ -110,7 +110,7 @@ export function ResetPasswordDialog({
       // Defer just enough for the toast to render before tearing down the
       // session and redirecting to /login.
       window.setTimeout(() => {
-        signOut({ callbackUrl: "/login" })
+        void signOutToLogin("password-reset")
       }, 300)
     })
   }

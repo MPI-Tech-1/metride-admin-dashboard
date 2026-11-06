@@ -6,8 +6,8 @@ import {
   KeyRound,
   LogOut,
 } from "lucide-react"
-import { signOut } from "next-auth/react"
 
+import { LogoutConfirmDialog } from "@/components/app/account/logout-confirm-dialog"
 import { ResetPasswordDialog } from "@/components/app/account/reset-password-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -50,6 +50,7 @@ export function NavUser({
   const initials = getInitials(user.name)
   const roleLabel = user.role ? ROLE_LABELS[user.role] : null
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   return (
     <SidebarMenu>
@@ -110,7 +111,13 @@ export function NavUser({
               Reset password
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={(event) => {
+                event.preventDefault()
+                setLogoutOpen(true)
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>
@@ -123,6 +130,7 @@ export function NavUser({
         onOpenChange={setResetPasswordOpen}
         email={user.email}
       />
+      <LogoutConfirmDialog open={logoutOpen} onOpenChange={setLogoutOpen} />
     </SidebarMenu>
   )
 }
