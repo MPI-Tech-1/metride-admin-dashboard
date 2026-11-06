@@ -39,6 +39,6 @@ export const config = {
      * Skip auth for login, APIs, Next internals, favicon, and static assets in
      * /public (e.g. logos) — otherwise /logo-*.png redirects to HTML and next/image breaks.
      */
-    "/((?!login|payment-success|api|_next/static|_next/image|favicon\\.ico|logo-mark\\.png|logo-square\\.png).*)",
+    "/((?!login|payment-success|api|_next/static|_next/image|favicon\\.ico|icon\\.png|apple-icon\\.png|logo-mark\\.png|logo-square\\.png).*)",
   ],
 }
