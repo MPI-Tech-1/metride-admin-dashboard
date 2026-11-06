@@ -2,6 +2,7 @@ import AppLayout from "@/components/layouts/app-layout"
 import CustomerLayout from "@/components/layouts/customer-layout"
 import { BreadcrumbItem } from "@/types/breadcrumb"
 import getCustomer from "@/actions/customers/getCustomer"
+import { EditCustomerModal } from "@/components/app/customers/edit-customer-modal"
 import { format, formatDistanceToNow } from "date-fns"
 import {
   IconUser,
@@ -34,6 +35,17 @@ export default async function Page({ params }: PageProps) {
           email: customer.email,
           mobileNumber: customer.mobileNumber,
         }}
+        header={
+          <EditCustomerModal
+            customerId={id}
+            customer={{
+              firstName: customer.firstName,
+              lastName: customer.lastName,
+              email: customer.email,
+              mobileNumber: customer.mobileNumber,
+            }}
+          />
+        }
       >
         <div className="px-4 pb-6 lg:px-6">
           <div className="grid grid-cols-1 gap-6">
