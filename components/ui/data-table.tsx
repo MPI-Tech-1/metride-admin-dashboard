@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -55,7 +56,12 @@ interface DataTableProps<TData> {
   paginationMeta: PaginationMeta
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
+  /** When provided, clicking a row navigates to the returned URL. */
+  getRowHref?: (row: TData) => string
 }
+
+const INTERACTIVE_SELECTOR =
+  'a, button, input, select, textarea, label, [role="checkbox"], [role="menuitem"], [data-no-row-click]'
 
 export function DataTable<TData>({
   data,
@@ -63,7 +69,26 @@ export function DataTable<TData>({
   paginationMeta,
   onPageChange,
   onPageSizeChange,
+  getRowHref,
 }: DataTableProps<TData>) {
+  const router = useRouter()
+
+  function handleRowClick(
+    event: React.MouseEvent<HTMLTableRowElement>,
+    href: string
+  ) {
+    const target = event.target as HTMLElement
+    // Ignore clicks from portaled content (e.g. dropdown menus) and from
+    // interactive controls inside the row.
+    if (!event.currentTarget.contains(target)) return
+    if (target.closest(INTERACTIVE_SELECTOR)) return
+    if (window.getSelection()?.toString()) return
+    if (event.metaKey || event.ctrlKey || event.button === 1) {
+      window.open(href, "_blank", "noopener")
+      return
+    }
+    router.push(href)
+  }
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -141,7 +166,7 @@ export function DataTable<TData>({
 
       {/* Table */}
       <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-muted">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -165,6 +190,17 @@ export function DataTable<TData>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
+                    className={getRowHref ? "cursor-pointer" : undefined}
+                    onClick={
+                      getRowHref
+                        ? (e) => handleRowClick(e, getRowHref(row.original))
+                        : undefined
+                    }
+                    onAuxClick={
+                      getRowHref
+                        ? (e) => handleRowClick(e, getRowHref(row.original))
+                        : undefined
+                    }
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -180,9 +216,9 @@ export function DataTable<TData>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center"
+                    className="h-32 text-center text-sm text-muted-foreground"
                   >
-                    No results.
+                    No records found.
                   </TableCell>
                 </TableRow>
               )}
@@ -191,13 +227,18 @@ export function DataTable<TData>({
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4">
+        <div className="flex items-center justify-between px-1">
           <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
-            {paginationMeta.total} total row(s)
+            {paginationMeta.total === 0
+              ? "No records"
+              : `Showing ${(paginationMeta.currentPage - 1) * paginationMeta.perPage + 1}–${Math.min(
+                  paginationMeta.currentPage * paginationMeta.perPage,
+                  paginationMeta.total
+                )} of ${paginationMeta.total.toLocaleString()}`}
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
-              <Label htmlFor="rows-per-page" className="text-sm font-medium">
+              <Label htmlFor="rows-per-page" className="text-sm font-normal text-muted-foreground">
                 Rows per page
               </Label>
               <Select
@@ -220,7 +261,7 @@ export function DataTable<TData>({
               </Select>
             </div>
 
-            <div className="flex w-fit items-center justify-center text-sm font-medium">
+            <div className="flex w-fit items-center justify-center text-sm text-muted-foreground">
               Page {paginationMeta.currentPage} of {paginationMeta.lastPage}
             </div>
 

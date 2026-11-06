@@ -31,7 +31,7 @@ function StatCard({
   accent: string
 }) {
   return (
-    <Card className="@container/card bg-gradient-to-t from-primary/5 to-card dark:bg-card">
+    <Card className="@container/card">
       <CardHeader>
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
           {value.toLocaleString()}

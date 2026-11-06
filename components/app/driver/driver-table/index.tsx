@@ -18,6 +18,7 @@ export function DriversTable({ drivers, paginationMeta }: DriversTableProps) {
       paginationMeta={paginationMeta}
       onPageChange={() => console.log("page changed")}
       onPageSizeChange={() => console.log("size changed")}
+      getRowHref={(row) => `/driver/${row.identifier}`}
     />
   )
 }

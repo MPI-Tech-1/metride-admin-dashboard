@@ -130,7 +130,7 @@ export default async function Page() {
           <div className="flex flex-col gap-4 px-4 lg:px-6">
             {/* Row 1 — Bookings */}
             <SectionLabel>Bookings</SectionLabel>
-            <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+            <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
               <StatCard value="0" trend="+0%" trendUp label="Total Bookings" sub="Compared to last month" icon={<IconCalendarCheck className="size-4" />} />
               <StatCard value="0" trend="+0%" trendUp label="Completed Bookings" sub="Successfully fulfilled" icon={<IconCalendarCheck className="size-4" />} />
               <StatCard value="0" trend="+0%" trendUp label="Pending Bookings" sub="Awaiting driver assignment" icon={<IconClockHour4 className="size-4" />} />
@@ -139,7 +139,7 @@ export default async function Page() {
 
             {/* Row 2 — Drivers */}
             <SectionLabel>Drivers</SectionLabel>
-            <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+            <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
               <StatCard value="0" trend="+0%" trendUp label="Total Drivers" sub="Compared to last month" icon={<IconCar className="size-4" />} />
               <StatCard value="0" trend="+0%" trendUp label="Active Drivers" sub="Online in last 24 hours" icon={<IconUserCheck className="size-4" />} />
               <StatCard value="0" trend="+0%" trendUp label="Approved Drivers" sub="Cleared for rides" icon={<IconUserCog className="size-4" />} />
@@ -148,7 +148,7 @@ export default async function Page() {
 
             {/* Row 3 — Customers */}
             <SectionLabel>Customers</SectionLabel>
-            <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+            <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
               <StatCard value="0" trend="+0%" trendUp label="Total Customers" sub="Compared to last month" icon={<IconUsers className="size-4" />} />
               <StatCard value="0" trend="+0%" trendUp label="Active Customers" sub="Logged in within 30 days" icon={<IconUserCheck className="size-4" />} />
               <StatCard value="0" trend="+0%" trendUp label="New This Month" sub="Recently registered" icon={<IconUserPlus className="size-4" />} />

@@ -69,12 +69,12 @@ export default async function Page({ params }: PageProps) {
                   <h3 className="text-base font-semibold sm:text-lg">
                     Personal Information
                   </h3>
-                  <p className="mt-1 text-xs text-gray-500 sm:text-sm">
+                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                     This section contains the driver personal information.
                   </p>
                 </div>
                 <button className="mt-1">
-                  <Pencil className="h-4 w-4 text-gray-500" />
+                  <Pencil className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
 
@@ -148,12 +148,12 @@ export default async function Page({ params }: PageProps) {
                   <h3 className="text-base font-semibold sm:text-lg">
                     Registration Progress
                   </h3>
-                  <p className="mt-1 text-xs text-gray-500 sm:text-sm">
+                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                     This section contains the driver registration progress.
                   </p>
                 </div>
                 <button className="mt-1">
-                  <Pencil className="h-4 w-4 text-gray-500" />
+                  <Pencil className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
 
@@ -195,7 +195,7 @@ export default async function Page({ params }: PageProps) {
                   <h3 className="text-base font-semibold sm:text-lg">
                     Approval History
                   </h3>
-                  <p className="mt-1 text-xs text-gray-500 sm:text-sm">
+                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                     Historical record of status changes and reasons.
                   </p>
                 </div>
@@ -267,12 +267,12 @@ export default async function Page({ params }: PageProps) {
                   <h3 className="text-base font-semibold sm:text-lg">
                     Bank Information
                   </h3>
-                  <p className="mt-1 text-xs text-gray-500 sm:text-sm">
+                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                     This section contains the driver payment account details.
                   </p>
                 </div>
                 <button className="mt-1">
-                  <Pencil className="h-4 w-4 text-gray-500" />
+                  <Pencil className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
 

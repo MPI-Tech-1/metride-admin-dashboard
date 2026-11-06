@@ -18,6 +18,7 @@ export function CustomersTable({ customers, paginationMeta }: CustomersTableProp
       paginationMeta={paginationMeta}
       onPageChange={() => console.log("page changed")}
       onPageSizeChange={() => console.log("size changed")}
+      getRowHref={(row) => `/customers/${row.identifier}`}
     />
   )
 }
