@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ChevronRight, type LucideIcon } from "lucide-react"
 import {
   Collapsible,
@@ -34,13 +35,35 @@ export type NavSection = {
   items: NavItem[]
 }
 
-function renderNavItem(item: NavItem) {
+function matchesPath(pathname: string, url: string): boolean {
+  if (!url || url === "#") return false
+  return pathname === url || pathname.startsWith(`${url}/`)
+}
+
+/** The most specific nav URL matching the current path, so only one link lights up. */
+function findActiveUrl(sections: NavSection[], pathname: string): string | null {
+  let best: string | null = null
+  for (const section of sections) {
+    for (const item of section.items) {
+      const urls = [item.url, ...(item.items?.map((sub) => sub.url) ?? [])]
+      for (const url of urls) {
+        if (matchesPath(pathname, url) && (!best || url.length > best.length)) {
+          best = url
+        }
+      }
+    }
+  }
+  return best
+}
+
+function renderNavItem(item: NavItem, activeUrl: string | null) {
   if (item.items?.length) {
+    const hasActiveChild = item.items.some((sub) => sub.url === activeUrl)
     return (
       <Collapsible
         key={item.title}
         asChild
-        defaultOpen={item.isActive}
+        defaultOpen={hasActiveChild}
         className="group/collapsible"
       >
         <SidebarMenuItem>
@@ -55,7 +78,10 @@ function renderNavItem(item: NavItem) {
             <SidebarMenuSub>
               {item.items.map((subItem) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <SidebarMenuSubButton asChild>
+                  <SidebarMenuSubButton
+                    asChild
+                    isActive={subItem.url === activeUrl}
+                  >
                     <Link href={subItem.url}>
                       <span>{subItem.title}</span>
                     </Link>
@@ -71,7 +97,11 @@ function renderNavItem(item: NavItem) {
 
   return (
     <SidebarMenuItem key={item.title}>
-      <SidebarMenuButton tooltip={item.title} asChild>
+      <SidebarMenuButton
+        tooltip={item.title}
+        asChild
+        isActive={item.url === activeUrl}
+      >
         <Link href={item.url}>
           {item.icon && <item.icon />}
           <span>{item.title}</span>
@@ -82,6 +112,9 @@ function renderNavItem(item: NavItem) {
 }
 
 export function NavMain({ sections }: { sections: NavSection[] }) {
+  const pathname = usePathname()
+  const activeUrl = findActiveUrl(sections, pathname)
+
   return (
     <>
       {sections.map((section, sectionIndex) => (
@@ -92,7 +125,9 @@ export function NavMain({ sections }: { sections: NavSection[] }) {
           <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/55">
             {section.label}
           </SidebarGroupLabel>
-          <SidebarMenu>{section.items.map((item) => renderNavItem(item))}</SidebarMenu>
+          <SidebarMenu>
+            {section.items.map((item) => renderNavItem(item, activeUrl))}
+          </SidebarMenu>
         </SidebarGroup>
       ))}
     </>
