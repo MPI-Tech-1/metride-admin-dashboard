@@ -8,11 +8,12 @@ import {
   LayoutDashboard,
   Wallet,
   RadioTower,
-  Activity,
-  Settings,
   ShieldCheck,
   TrendingUp,
   Tags,
+  Gift,
+  MapPin,
+  Car,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 
@@ -50,21 +51,25 @@ const navSections: RoleAwareNavSection[] = [
   {
     label: "Overview",
     items: [
-      {
-        title: "Dashboard",
-        url: "/dashboard",
-        icon: LayoutDashboard,
-      },
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Live tracking", url: "/tracking", icon: RadioTower },
     ],
   },
   {
     label: "Operations",
     items: [
-      { title: "Customers", url: "/customers", icon: Users },
-      { title: "Drivers", url: "/driver", icon: CarFront },
-      { title: "Active Drivers", url: "/drivers/active", icon: Activity },
       { title: "Bookings", url: "/booking", icon: CalendarCheck },
-      { title: "Live Tracking", url: "/tracking", icon: RadioTower },
+      { title: "Customers", url: "/customers", icon: Users },
+      {
+        title: "Drivers",
+        url: "#",
+        icon: CarFront,
+        items: [
+          { title: "All drivers", url: "/driver" },
+          { title: "Active now", url: "/drivers/active" },
+          { title: "Online rewards", url: "/drivers/online-rewards" },
+        ],
+      },
     ],
   },
   {
@@ -75,37 +80,10 @@ const navSections: RoleAwareNavSection[] = [
         url: "#",
         icon: Wallet,
         items: [
-          { title: "Payout", url: "/wallet/payouts" },
-          { title: "Driver", url: "/wallet/driver" },
+          { title: "Payouts", url: "/wallet/payouts" },
+          { title: "Driver wallets", url: "/wallet/driver" },
         ],
       },
-    ],
-  },
-  {
-    label: "Configuration",
-    items: [
-      {
-        title: "Promotions",
-        url: "/promotions",
-        icon: Tags,
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: Settings,
-        items: [
-          { title: "Cities", url: "/settings/cities" },
-          { title: "Popular routes", url: "/settings/popular-locations" },
-          { title: "Ride types", url: "/settings/ride-types" },
-          { title: "Vehicle makes", url: "/settings/vehicle-makes" },
-          { title: "Vehicle models", url: "/settings/vehicle-models" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Mvest",
-    items: [
       {
         title: "Mvest",
         url: "#",
@@ -119,13 +97,34 @@ const navSections: RoleAwareNavSection[] = [
     ],
   },
   {
-    label: "Administration",
+    label: "Configuration",
     items: [
+      { title: "Promotions", url: "/promotions", icon: Tags },
       {
-        title: "User Management",
-        url: "/user-management",
-        icon: ShieldCheck,
+        title: "Driver rewards",
+        url: "/settings/driver-online-reward",
+        icon: Gift,
       },
+      {
+        title: "Locations",
+        url: "#",
+        icon: MapPin,
+        items: [
+          { title: "Cities", url: "/settings/cities" },
+          { title: "Popular routes", url: "/settings/popular-locations" },
+        ],
+      },
+      {
+        title: "Fleet",
+        url: "#",
+        icon: Car,
+        items: [
+          { title: "Ride types", url: "/settings/ride-types" },
+          { title: "Vehicle makes", url: "/settings/vehicle-makes" },
+          { title: "Vehicle models", url: "/settings/vehicle-models" },
+        ],
+      },
+      { title: "Admin users", url: "/user-management", icon: ShieldCheck },
     ],
   },
 ]
